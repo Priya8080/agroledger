@@ -14,7 +14,7 @@ def register():
 
             existing_user = get_user_by_email(email)
             if existing_user:
-                # Check verification status to give a precise error message
+    
                 is_verified = existing_user[5] if isinstance(existing_user, tuple) else existing_user.get('is_verified')
                 if not is_verified:
                     flash("Your account is currently awaiting admin approval.")
@@ -22,7 +22,6 @@ def register():
                     flash("Email already registered. Please login.")
                 return redirect(url_for('auth.register'))
 
-            # Create user requiring approval
             create_user(name, email, phone, password, is_verified=False)
 
             flash("Registration successful! Your account is awaiting admin approval.")
@@ -42,7 +41,7 @@ def login():
 
             user = get_user_by_email(email)
             if user:
-                # user[4] or user['password'] depending on cursor
+                
                 is_valid = False
                 if isinstance(user, tuple):
                     is_valid = (user[4] == password)
@@ -50,7 +49,7 @@ def login():
                     is_valid = (user.get('password') == password)
 
                 if is_valid:
-                    # check is_verified
+                    
                     verified = user[5] if isinstance(user, tuple) else user.get('is_verified')
                     if verified:
                         session['user_email'] = email
