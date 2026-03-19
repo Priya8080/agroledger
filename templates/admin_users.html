@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% block title %}AgroLedger - Admin Approvals{% endblock %}
+{% block body_class %}dashboard-page{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <ul>
+            <li><a href="{{ url_for('dashboard.dashboard_view') }}"><i class="fas fa-home"></i> Overview</a></li>
+            <li><a href="{{ url_for('dashboard.land_view') }}"><i class="fas fa-map-marked-alt"></i> Land Management</a></li>
+            <li><a href="{{ url_for('dashboard.crops_view') }}"><i class="fas fa-seedling"></i> Crops</a></li>
+            <li><a href="{{ url_for('dashboard.labour_view') }}"><i class="fas fa-users"></i> Labour Logs</a></li>
+            <li><a href="{{ url_for('dashboard.financials_view') }}"><i class="fas fa-chart-line"></i> Financials</a></li>
+            <li class="active"><a href="{{ url_for('dashboard.admin_users') }}"><i class="fas fa-user-shield"></i> User Approvals</a></li>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dashboard-content">
+        <header class="content-header">
+            <h2>User Approvals</h2>
+            <p>Review and verify pending user registrations.</p>
+        </header>
+
+        <!-- Flash messages -->
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="flashes">
+                    {% for msg in messages %}
+                        <div class="alert highlight-msg">{{ msg }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <div class="list-card animate-fade-up">
+            <h3 class="list-card-header"><i class="fas fa-user-clock"></i> Pending Accounts</h3>
+            <div class="data-table-wrapper">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Registration Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if users %}
+                            {% for u in users %}
+                            <tr>
+                                <td>{{ u.name if u.name is defined else u[1] }}</td>
+                                <td>{{ u.email if u.email is defined else u[2] }}</td>
+                                <td>{{ u.phone if u.phone is defined else u[3] }}</td>
+                                <td>{{ (u.created_at if u.created_at is defined else u[6]).strftime('%Y-%m-%d') if (u.created_at if u.created_at is defined else u[6]) else 'N/A' }}</td>
+                                <td>
+                                    <div style="display: flex; gap: 0.5rem;">
+                                        <form method="POST" action="{{ url_for('dashboard.admin_users_approve', target_id=(u.id if u.id is defined else u[0])) }}">
+                                            <button type="submit" class="btn btn-primary btn-sm" style="padding: 0.4rem 0.8rem;"><i class="fas fa-check"></i> Approve</button>
+                                        </form>
+                                        <form method="POST" action="{{ url_for('dashboard.admin_users_reject', target_id=(u.id if u.id is defined else u[0])) }}" onsubmit="return confirm('Are you sure you want to reject and delete this user?');">
+                                            <button type="submit" class="btn btn-secondary btn-sm" style="padding: 0.4rem 0.8rem;"><i class="fas fa-times"></i> Reject</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 3rem;">No pending registrations found.</td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

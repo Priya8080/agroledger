@@ -12,4 +12,7 @@ class Config:
     MYSQL_PASSWORD = os.environ.get('MYSQL_PASSWORD', '') # Must be set via environment variable
     MYSQL_DB = os.environ.get('MYSQL_DB', 'defaultdb')
     MYSQL_PORT = int(os.environ.get('MYSQL_PORT', 13411))
+    
+    # Admin System
+    ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL', 'priya8080@gmail.com')
 

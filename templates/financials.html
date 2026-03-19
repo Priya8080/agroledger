@@ -11,6 +11,9 @@
             <li><a href="{{ url_for('dashboard.crops_view') }}"><i class="fas fa-seedling"></i> Crops</a></li>
             <li><a href="{{ url_for('dashboard.labour_view') }}"><i class="fas fa-users"></i> Labour Logs</a></li>
             <li class="active"><a href="{{ url_for('dashboard.financials_view') }}"><i class="fas fa-chart-line"></i> Financials</a></li>
+            {% if session.get('user_email') == config['ADMIN_EMAIL'] %}
+            <li><a href="{{ url_for('dashboard.admin_users') }}"><i class="fas fa-user-shield"></i> User Approvals</a></li>
+            {% endif %}
         </ul>
     </aside>
 

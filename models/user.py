@@ -15,3 +15,22 @@ def get_user_by_email(email):
     user = cur.fetchone()
     cur.close()
     return user
+
+def get_all_unverified_users():
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM users WHERE is_verified=False")
+    users = cur.fetchall()
+    cur.close()
+    return users
+
+def verify_user(user_id):
+    cur = mysql.connection.cursor()
+    cur.execute("UPDATE users SET is_verified=True WHERE id=%s", (user_id,))
+    mysql.connection.commit()
+    cur.close()
+
+def delete_user(user_id):
+    cur = mysql.connection.cursor()
+    cur.execute("DELETE FROM users WHERE id=%s", (user_id,))
+    mysql.connection.commit()
+    cur.close()
