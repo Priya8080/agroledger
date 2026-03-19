@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AgroLedger{% endblock %}</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- App Styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="{% block body_class %}default-page{% endblock %}">
+
+    <nav class="global-navbar">
+        <div class="nav-brand">
+            <a href="/">🍃 AgroLedger</a>
+        </div>
+        <div class="nav-links">
+            {% if session.get('user_email') %}
+                <a href="{{ url_for('dashboard.dashboard_view') }}" class="nav-item"><i class="fas fa-chart-line"></i> Dashboard</a>
+                <a href="{{ url_for('auth.logout') }}" class="btn btn-secondary"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            {% else %}
+                <a href="/" class="nav-item">Home</a>
+                <a href="{{ url_for('auth.login') }}" class="nav-item">Login</a>
+                <a href="{{ url_for('auth.register') }}" class="btn btn-primary nav-cta">Register</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="global-footer">
+        <p>&copy; 2026 AgroLedger. Digitizing Agriculture.</p>
+        <p style="font-size: 0.85rem; margin-top: 8px; color: rgba(255,255,255,0.7);">Powered by <strong>Python, Flask, MySQL, HTML/CSS/JS</strong></p>
+    </footer>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</body>
+</html>

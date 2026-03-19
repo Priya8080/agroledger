@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block title %}AgroLedger - Home{% endblock %}
+{% block body_class %}home-page{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="hero-overlay"></div>
+    <div class="hero-content container">
+        <h1 class="hero-title">Empowering Agriculture with <span class="highlight">Precision</span></h1>
+        <p class="hero-subtitle">Your complete, professional agriculture financial management system.</p>
+        <div class="hero-btns">
+            <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-lg">Get Started Free</a>
+            <a href="{{ url_for('auth.login') }}" class="btn btn-outline btn-lg">Log In</a>
+        </div>
+    </div>
+</div>
+
+<div class="features-preview container">
+    <div class="feature-card">
+        <div class="feature-icon"><i class="fas fa-map-marked-alt"></i></div>
+        <h3>Land Management</h3>
+        <p>Digitize your land parcels and track usage precisely.</p>
+    </div>
+    <div class="feature-card">
+        <div class="feature-icon"><i class="fas fa-seedling"></i></div>
+        <h3>Crop Tracking</h3>
+        <p>Monitor crop performance, yield, and financial turnover.</p>
+    </div>
+    <div class="feature-card">
+        <div class="feature-icon"><i class="fas fa-chart-pie"></i></div>
+        <h3>Profit & Loss</h3>
+        <p>Make data-driven decisions with rich visual analytics.</p>
+    </div>
+</div>
+{% endblock %}

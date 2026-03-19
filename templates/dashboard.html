@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+{% block title %}AgroLedger - Dashboard{% endblock %}
+{% block body_class %}dashboard-page{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+    <aside class="sidebar">
+        <ul>
+            <li class="active"><a href="{{ url_for('dashboard.dashboard_view') }}"><i class="fas fa-home"></i> Overview</a></li>
+            <li><a href="{{ url_for('dashboard.land_view') }}"><i class="fas fa-map-marked-alt"></i> Land Management</a></li>
+            <li><a href="{{ url_for('dashboard.crops_view') }}"><i class="fas fa-seedling"></i> Crops</a></li>
+            <li><a href="{{ url_for('dashboard.labour_view') }}"><i class="fas fa-users"></i> Labour Logs</a></li>
+            <li><a href="{{ url_for('dashboard.financials_view') }}"><i class="fas fa-chart-line"></i> Financials</a></li>
+        </ul>
+    </aside>
+
+    <div class="dashboard-content">
+        <header class="content-header" style="background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.8)), url('{{ url_for('static', filename='images/dashboard_header.png') }}'); background-size: cover; background-position: center; padding: 4rem 2rem; border-radius: 12px; margin-bottom: 2rem; color: white; text-shadow: 2px 2px 6px rgba(0,0,0,0.9);">
+            <h1 style="color: white; margin-bottom: 0.5rem; font-size: 2.5rem;">Welcome Back!</h1>
+            <p style="font-size: 1.1rem; opacity: 0.9;">Here is your farming overview.</p>
+        </header>
+
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                <div class="alert highlight-msg">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        {% endwith %}
+        
+        <div class="card-grid">
+            <div class="card stat-card" style="align-items: flex-start;">
+                <div class="card-icon"><i class="fas fa-seedling"></i></div>
+                <div class="card-info">
+                    <h3>Active Crops</h3>
+                    <p class="stat">{{ active_crops_count }}</p>
+                    <small style="color: #718096; font-size: 0.9rem;">grown on <strong>{{ "%.2f"|format(total_land_area) }}</strong> acres of land</small>
+                </div>
+            </div>
+            <div class="card stat-card">
+                <div class="card-icon"><i class="fas fa-users"></i></div>
+                <div class="card-info">
+                    <h3>Labour Logs</h3>
+                    <p class="stat">{{ labour_count }}</p>
+                </div>
+            </div>
+            <div class="card stat-card">
+                <div class="card-icon"><i class="fas fa-wallet" style="color: {{ 'green' if net_profit >= 0 else 'red' }};"></i></div>
+                <div class="card-info">
+                    <h3>Net Profit</h3>
+                    <p class="stat" style="color: {{ 'green' if net_profit >= 0 else 'red' }};">₹{{ "%.2f"|format(net_profit) }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profit and Loss Chart Area -->
+        <div class="chart-container" style="margin-top: 2rem; background: var(--card-bg); padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+            <h3 style="margin-bottom: 1.5rem; font-weight: 600; color: var(--text-color);">Overall Financial Visualization</h3>
+            <div style="position: relative; height: 300px; width: 100%;">
+                <canvas id="profitChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var ctx = document.getElementById('profitChart').getContext('2d');
+        var totalSales = {{ total_sales | default(0) }};
+        var totalExpenses = {{ total_expenses | default(0) }};
+        
+        // Only draw chart if there is data, otherwise show empty state
+        if(totalSales === 0 && totalExpenses === 0) {
+            totalSales = 0.01; // Avoid completely empty chart visually if needed, or handle graceully
+        }
+
+        var profitChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Earnings (Sales)', 'Expenses'],
+                datasets: [{
+                    data: [totalSales, totalExpenses],
+                    backgroundColor: ['#2e7d32', '#d32f2f'],
+                    hoverBackgroundColor: ['#1b5e20', '#b71c1c'],
+                    borderWidth: 2,
+                    borderColor: '#ffffff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '65%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            font: {
+                                family: "'Inter', sans-serif",
+                                size: 14
+                            },
+                            color: '#4a5568'
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed !== null) {
+                                    label += '₹' + context.parsed;
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

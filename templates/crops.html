@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% block title %}AgroLedger - Crops Management{% endblock %}
+{% block body_class %}dashboard-page{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+    <aside class="sidebar">
+        <ul>
+            <li><a href="{{ url_for('dashboard.dashboard_view') }}"><i class="fas fa-home"></i> Overview</a></li>
+            <li><a href="{{ url_for('dashboard.land_view') }}"><i class="fas fa-map-marked-alt"></i> Land Management</a></li>
+            <li class="active"><a href="{{ url_for('dashboard.crops_view') }}"><i class="fas fa-seedling"></i> Crops</a></li>
+            <li><a href="{{ url_for('dashboard.labour_view') }}"><i class="fas fa-users"></i> Labour Logs</a></li>
+            <li><a href="{{ url_for('dashboard.financials_view') }}"><i class="fas fa-chart-line"></i> Financials</a></li>
+        </ul>
+    </aside>
+
+    <div class="dashboard-content">
+        <header class="content-header" style="background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.8)), url('{{ url_for('static', filename='images/crops_header.png') }}'); background-size: cover; background-position: center; padding: 4rem 2rem; border-radius: 12px; margin-bottom: 2rem; color: white; text-shadow: 2px 2px 6px rgba(0,0,0,0.9);">
+            <h1 style="color: white; margin-bottom: 0.5rem; font-size: 2.5rem;">Crops Management</h1>
+            <p style="font-size: 1.1rem; opacity: 0.9;">Manage your planted and harvested crops by season.</p>
+        </header>
+
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                <div class="alert highlight-msg" style="background:#e6fffa; color:#234e52; padding:10px; border-radius:8px; margin-bottom:15px; border-left:4px solid #319795;">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        {% endwith %}
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px;">
+            {% for season_name, season_crops in seasons.items() %}
+            <div class="card season-card" style="padding: 24px; background: white; border-top: 5px solid var(--primary-color); box-shadow: 0 4px 6px rgba(0,0,0,0.05); border-radius: 12px;">
+                <h3 style="margin-bottom: 20px; color: var(--text-main); font-weight: 700; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #e2e8f0; padding-bottom: 12px;">
+                    {{ season_name }} Season
+                    <span style="font-size: 0.9rem; background: #e2e8f0; padding: 3px 8px; border-radius: 12px; color: #4a5568;">{{ season_crops|length }}</span>
+                </h3>
+                
+                <!-- Add Form -->
+                <form action="{{ url_for('dashboard.crops_view') }}" method="POST" style="margin-bottom: 25px; display: flex; flex-direction: column; gap: 12px; background: #f8fafc; padding: 15px; border-radius: 8px;">
+                    <h4 style="font-size: 0.9rem; color: #718096; margin-bottom: 5px;"><i class="fas fa-plus-circle"></i> Add New</h4>
+                    <input type="hidden" name="season" value="{{ season_name }}">
+                    <input type="text" name="crop_name" placeholder="Crop Name (e.g. Wheat)" required style="padding: 10px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 14px;">
+                    <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                        <input type="date" name="sown_date" required style="flex: 1; min-width: 120px; padding: 10px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 14px;" title="Sown Date">
+                        <input type="number" step="0.01" name="expected_yield" placeholder="Expected Yield (Q)" required style="flex: 1; min-width: 120px; padding: 10px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 14px;">
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="padding: 10px; margin-top: 5px;">Save</button>
+                </form>
+
+                <!-- Crops List -->
+                <ul style="list-style: none; padding: 0;">
+                    {% for crop in season_crops %}
+                    <li style="display: flex; justify-content: space-between; align-items: flex-start; padding: 15px; background: #ffffff; margin-bottom: 10px; border-radius: 8px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.02); word-break: break-word;">
+                        <div style="flex: 1; min-width: 0; padding-right: 15px;">
+                            <strong style="color: var(--text-main); font-size: 1.05rem;">{{ crop[2] }}</strong> 
+                            <span style="font-size: 0.85rem; color: #38a169; font-weight: 600; margin-left: 5px; display: inline-block;">{{ crop[5] }} Q Expected</span><br>
+                            <small style="color: #718096; display: flex; align-items: center; margin-top: 5px;"><i class="far fa-calendar-alt" style="margin-right: 5px;"></i> Sown: {{ crop[4] }}</small>
+                        </div>
+                        <a href="{{ url_for('dashboard.crop_delete', crop_id=crop[0]) }}" style="color: #e53e3e; text-decoration: none; padding: 5px; border-radius: 4px; transition: background 0.2s;" title="Remove Entry" onmouseover="this.style.background='#fed7d7'" onmouseout="this.style.background='transparent'">
+                            <i class="fas fa-trash-alt"></i>
+                        </a>
+                    </li>
+                    {% else %}
+                    <li style="text-align: center; color: #a0aec0; padding: 20px; font-size: 0.95rem; background: #f8fafc; border-radius: 8px; border: 1px dashed #cbd5e0;">No crops logged for {{ season_name }}.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
