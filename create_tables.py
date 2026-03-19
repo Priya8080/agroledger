@@ -61,6 +61,7 @@ tables = [
         user_id INT,
         worker_name VARCHAR(100),
         work_date DATE,
+        end_date DATE,
         wages_paid DECIMAL(10,2),
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     );

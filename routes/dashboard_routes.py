@@ -121,9 +121,10 @@ def labour_view():
     if request.method == 'POST':
         worker_name = request.form['worker_name']
         work_date = request.form['work_date']
+        end_date = request.form.get('end_date') or None
         wages_paid = request.form['wages_paid']
         try:
-            add_labour(user_id, worker_name, work_date, wages_paid)
+            add_labour(user_id, worker_name, work_date, end_date, wages_paid)
             flash("Labour log added successfully!")
         except Exception as e:
             flash(f"Error adding labour log: {e}")

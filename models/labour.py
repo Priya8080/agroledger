@@ -1,10 +1,10 @@
 from extensions import mysql
 
-def add_labour(user_id, worker_name, work_date, wages_paid):
+def add_labour(user_id, worker_name, work_date, end_date, wages_paid):
     cur = mysql.connection.cursor()
     cur.execute(
-        "INSERT INTO labour (user_id, worker_name, work_date, wages_paid) VALUES (%s, %s, %s, %s)",
-        (user_id, worker_name, work_date, wages_paid)
+        "INSERT INTO labour (user_id, worker_name, work_date, end_date, wages_paid) VALUES (%s, %s, %s, %s, %s)",
+        (user_id, worker_name, work_date, end_date, wages_paid)
     )
     mysql.connection.commit()
     cur.close()

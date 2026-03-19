@@ -38,6 +38,7 @@
             <form action="{{ url_for('dashboard.labour_view') }}" method="POST" class="form-grid">
                 <input type="text" name="worker_name" placeholder="Worker Name" required>
                 <input type="date" name="work_date" required>
+                <input type="date" name="end_date" placeholder="End Date (Optional)">
                 <input type="number" step="0.01" name="wages_paid" placeholder="Wages Paid (₹)" required>
                 <button type="submit" class="btn btn-primary">Add Log</button>
             </form>
@@ -51,6 +52,7 @@
                         <th>ID</th>
                         <th>Worker Name</th>
                         <th>Work Date</th>
+                        <th>End Date</th>
                         <th>Wages Paid (₹)</th>
                         <th>Action</th>
                     </tr>
@@ -61,7 +63,8 @@
                         <td>{{ loop.index }}</td>
                         <td>{{ log[2] }}</td>
                         <td>{{ log[3] }}</td>
-                        <td>₹{{ log[4] }}</td>
+                        <td>{{ log[4] if log[4] else 'N/A' }}</td>
+                        <td>₹{{ log[5] }}</td>
                         <td><a href="{{ url_for('dashboard.labour_delete', labour_id=log[0]) }}" class="btn btn-danger btn-sm">Delete</a></td>
                     </tr>
                     {% else %}
