@@ -17,6 +17,9 @@
         <div class="nav-brand">
             <a href="/">🍃 AgroLedger</a>
         </div>
+        <div class="hamburger" id="hamburger">
+            <i class="fas fa-bars"></i>
+        </div>
         <div class="nav-links">
             {% if session.get('user_email') %}
                 <a href="{{ url_for('dashboard.dashboard_view') }}" class="nav-item"><i class="fas fa-chart-line"></i> Dashboard</a>
@@ -40,5 +43,16 @@
 
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const hamburger = document.getElementById('hamburger');
+            const navLinks = document.querySelector('.nav-links');
+            if (hamburger) {
+                hamburger.addEventListener('click', () => {
+                    navLinks.classList.toggle('active');
+                });
+            }
+        });
+    </script>
 </body>
 </html>

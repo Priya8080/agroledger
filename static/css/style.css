@@ -72,6 +72,13 @@ p {
     gap: 20px;
 }
 
+.hamburger {
+    display: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: var(--primary-color);
+}
+
 .nav-item {
     text-decoration: none;
     color: var(--text-muted);
@@ -545,5 +552,32 @@ p {
     }
     .global-navbar {
         padding: 15px 20px;
+        flex-wrap: wrap;
+    }
+    .hamburger {
+        display: block;
+    }
+    .nav-links {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        background: var(--glass-bg);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        border-bottom: 1px solid var(--glass-border);
+        padding: 20px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+    }
+    .nav-links.active {
+        display: flex;
+    }
+    .nav-item, .nav-links .btn {
+        width: 100%;
+        text-align: center;
+        margin-top: 10px;
+        margin-bottom: 10px;
     }
 }
