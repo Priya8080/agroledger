@@ -19,7 +19,8 @@ class MySQL:
                 password=current_app.config.get('MYSQL_PASSWORD', ''),
                 db=current_app.config.get('MYSQL_DB', ''),
                 port=port,
-                autocommit=True
+                autocommit=True,
+                ssl={} # Requires SSL for Aiven DB
             )
         return g.mysql_db
 
