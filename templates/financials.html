@@ -15,27 +15,27 @@
     </aside>
 
     <div class="dashboard-content">
-        <header class="content-header" style="background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.8)), url('{{ url_for('static', filename='images/finance_header.png') }}'); background-size: cover; background-position: center; padding: 4rem 2rem; border-radius: 12px; margin-bottom: 2rem; color: white; text-shadow: 2px 2px 6px rgba(0,0,0,0.9);">
-            <h1 style="color: white; margin-bottom: 0.5rem; font-size: 2.5rem;">Financial Management</h1>
-            <p style="font-size: 1.1rem; opacity: 0.9;">Professional tracking for your farming expenses and crop sales.</p>
+        <header class="content-header" style="background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.8)), url('{{ url_for('static', filename='images/finance_header.png') }}'); background-size: cover; background-position: center; padding: 4rem 2.5rem; border-radius: 12px; margin-bottom: 2rem; color: white; text-shadow: 2px 2px 6px rgba(0,0,0,0.9);">
+            <h1 class="animate-fade-up" style="color: white; margin-bottom: 0.5rem; font-size: 2.5rem;">Financial Management</h1>
+            <p class="animate-fade-up" style="font-size: 1.1rem; opacity: 0.9; animation-delay: 0.1s;">Professional tracking for your farming expenses and crop sales.</p>
         </header>
 
         {% with messages = get_flashed_messages() %}
         {% if messages %}
             <div class="messages">
                 {% for message in messages %}
-                <div class="alert highlight-msg" style="background:#e6fffa; color:#234e52; padding:10px; border-radius:8px; margin-bottom:15px; border-left:4px solid #319795;">{{ message }}</div>
+                <div class="flashes alert highlight-msg">{{ message }}</div>
                 {% endfor %}
             </div>
         {% endif %}
         {% endwith %}
 
-        <div class="card-grid" style="grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 30px;">
+        <div class="card-grid" style="grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));">
             <!-- Expenses Form -->
-            <div class="form-card" style="background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-top: 5px solid #e53e3e;">
-                <h3 style="margin-bottom: 20px; color: #2d3748; font-weight: 700; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px;"><i class="fas fa-minus-circle" style="color:#e53e3e;"></i> Log an Expense</h3>
-                <form action="{{ url_for('dashboard.expense_add') }}" method="POST" class="form-grid" style="display: flex; flex-direction: column; gap: 15px;">
-                    <select name="expense_category" required style="padding: 12px; border: 1px solid #cbd5e0; border-radius: 8px; font-size: 15px; background: #f8fafc;">
+            <div class="form-card" style="border-top: 5px solid var(--danger-color);">
+                <h3 style="margin-bottom: 1.25rem; font-weight: 700; border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem;"><i class="fas fa-minus-circle" style="color:var(--danger-color);"></i> Log an Expense</h3>
+                <form action="{{ url_for('dashboard.expense_add') }}" method="POST" style="display: flex; flex-direction: column; gap: 1rem;">
+                    <select name="expense_category" required style="padding: 0.875rem; border: 1px solid var(--border-color); border-radius: 0.5rem; font-size: 0.95rem; background: var(--input-bg); color: var(--text-main);">
                         <option value="" disabled selected>Select Category</option>
                         <option value="Fertilizer">Fertilizer</option>
                         <option value="Pesticide">Pesticide</option>
@@ -43,60 +43,62 @@
                         <option value="Seeds">Seeds</option>
                         <option value="Other">Other</option>
                     </select>
-                    <div style="display: flex; gap: 15px;">
-                        <input type="number" step="0.01" name="amount" placeholder="Amount (₹)" required style="flex: 1; padding: 12px; border: 1px solid #cbd5e0; border-radius: 8px; font-size: 15px; background: #f8fafc;">
-                        <input type="date" name="expense_date" required style="flex: 1; padding: 12px; border: 1px solid #cbd5e0; border-radius: 8px; font-size: 15px; background: #f8fafc;">
+                    <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                        <input type="number" step="0.01" name="amount" placeholder="Amount (₹)" required style="flex: 1; min-width: 120px; padding: 0.875rem; border: 1px solid var(--border-color); border-radius: 0.5rem; font-size: 0.95rem; background: var(--input-bg); color: var(--text-main);">
+                        <input type="date" name="expense_date" required style="flex: 1; min-width: 120px; padding: 0.875rem; border: 1px solid var(--border-color); border-radius: 0.5rem; font-size: 0.95rem; background: var(--input-bg); color: var(--text-main);">
                     </div>
-                    <input type="text" name="description" placeholder="Short Description" style="padding: 12px; border: 1px solid #cbd5e0; border-radius: 8px; font-size: 15px; background: #f8fafc;">
-                    <button type="submit" class="btn btn-danger" style="padding: 12px; font-size: 16px; margin-top: 10px;">Add Expense</button>
+                    <input type="text" name="description" placeholder="Short Description" style="padding: 0.875rem; border: 1px solid var(--border-color); border-radius: 0.5rem; font-size: 0.95rem; background: var(--input-bg); color: var(--text-main);">
+                    <button type="submit" class="btn btn-secondary" style="margin-top: 0.5rem;">Add Expense</button>
                 </form>
             </div>
 
             <!-- Sales Form -->
-            <div class="form-card" style="background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-top: 5px solid #38a169;">
-                <h3 style="margin-bottom: 20px; color: #2d3748; font-weight: 700; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px;"><i class="fas fa-plus-circle" style="color:#38a169;"></i> Log a Sale</h3>
-                <form action="{{ url_for('dashboard.sale_add') }}" method="POST" class="form-grid" style="display: flex; flex-direction: column; gap: 15px;">
-                    <select name="crop_id" required style="padding: 12px; border: 1px solid #cbd5e0; border-radius: 8px; font-size: 15px; background: #f8fafc;">
+            <div class="form-card" style="border-top: 5px solid var(--success-color);">
+                <h3 style="margin-bottom: 1.25rem; font-weight: 700; border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem;"><i class="fas fa-plus-circle" style="color:var(--success-color);"></i> Log a Sale</h3>
+                <form action="{{ url_for('dashboard.sale_add') }}" method="POST" style="display: flex; flex-direction: column; gap: 1rem;">
+                    <select name="crop_id" required style="padding: 0.875rem; border: 1px solid var(--border-color); border-radius: 0.5rem; font-size: 0.95rem; background: var(--input-bg); color: var(--text-main);">
                         <option value="" disabled selected>Select Crop Sold</option>
                         {% for crop in crops %}
                         <option value="{{ crop[0] }}">{{ crop[2] }} ({{ crop[3] }})</option>
                         {% endfor %}
                     </select>
-                    <div style="display: flex; gap: 15px;">
-                        <input type="number" step="0.01" name="quantity_sold" placeholder="Qty Sold (Q)" required style="flex: 1; padding: 12px; border: 1px solid #cbd5e0; border-radius: 8px; font-size: 15px; background: #f8fafc;">
-                        <input type="number" step="0.01" name="price_per_unit" placeholder="Price Per Q (₹)" required style="flex: 1; padding: 12px; border: 1px solid #cbd5e0; border-radius: 8px; font-size: 15px; background: #f8fafc;">
+                    <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                        <input type="number" step="0.01" name="quantity_sold" placeholder="Qty Sold (Q)" required style="flex: 1; min-width: 120px; padding: 0.875rem; border: 1px solid var(--border-color); border-radius: 0.5rem; font-size: 0.95rem; background: var(--input-bg); color: var(--text-main);">
+                        <input type="number" step="0.01" name="price_per_unit" placeholder="Price Per Q (₹)" required style="flex: 1; min-width: 120px; padding: 0.875rem; border: 1px solid var(--border-color); border-radius: 0.5rem; font-size: 0.95rem; background: var(--input-bg); color: var(--text-main);">
                     </div>
-                    <input type="date" name="sale_date" required style="padding: 12px; border: 1px solid #cbd5e0; border-radius: 8px; font-size: 15px; background: #f8fafc;">
-                    <button type="submit" class="btn " style="background:#38a169; color:white; padding: 12px; font-size: 16px; margin-top: 10px; border-radius: 8px; border: none; font-weight: 600; cursor: pointer;">Add Sale</button>
+                    <input type="date" name="sale_date" required style="padding: 0.875rem; border: 1px solid var(--border-color); border-radius: 0.5rem; font-size: 0.95rem; background: var(--input-bg); color: var(--text-main);">
+                    <button type="submit" class="btn btn-primary" style="margin-top: 0.5rem;">Add Sale</button>
                 </form>
             </div>
         </div>
 
         <!-- Recent Records -->
-        <div class="card-grid" style="grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); margin-top: 2rem; gap: 30px;">
+        <div class="card-grid" style="grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));">
             <!-- Expenses Table -->
-            <div class="list-card" style="background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
-                <h3 style="margin-bottom: 20px; color: #2d3748; font-weight: 700; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px;">Recent Expenses</h3>
-                <div style="overflow-x: auto;">
-                    <table class="data-table" style="width: 100%; text-align: left; border-collapse: collapse;">
+            <div class="list-card">
+                <div class="list-card-header">
+                    <h3 style="font-weight: 700;">Recent Expenses</h3>
+                </div>
+                <div class="data-table-wrapper">
+                    <table class="data-table">
                         <thead>
-                            <tr style="background: #f7fafc; color: #4a5568;">
-                                <th style="padding: 12px; border-bottom: 2px solid #e2e8f0;">Date</th>
-                                <th style="padding: 12px; border-bottom: 2px solid #e2e8f0;">Category</th>
-                                <th style="padding: 12px; border-bottom: 2px solid #e2e8f0;">Amount</th>
-                                <th style="padding: 12px; border-bottom: 2px solid #e2e8f0;"></th>
+                            <tr>
+                                <th>Date</th>
+                                <th>Category</th>
+                                <th>Amount</th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for exp in expenses %}
-                            <tr style="border-bottom: 1px solid #edf2f7; transition: background 0.2s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
-                                <td style="padding: 12px; color: #718096; font-size: 0.95rem;">{{ exp[4] }}</td>
-                                <td style="padding: 12px; font-weight: 500;">{{ exp[2] }}</td>
-                                <td style="padding: 12px; color: #e53e3e; font-weight: 600; white-space: nowrap;">₹{{ "%.2f"|format(exp[3]) }}</td>
-                                <td style="padding: 12px;"><a href="{{ url_for('dashboard.expense_delete', expense_id=exp[0]) }}" style="color: #e53e3e; text-decoration: none;" title="Delete"><i class="fas fa-trash-alt"></i></a></td>
+                            <tr>
+                                <td style="color: var(--text-muted); font-size: 0.95rem;">{{ exp[4] }}</td>
+                                <td style="font-weight: 500;">{{ exp[2] }}</td>
+                                <td style="color: var(--danger-color); font-weight: 600; white-space: nowrap;">₹{{ "%.2f"|format(exp[3]) }}</td>
+                                <td><a href="{{ url_for('dashboard.expense_delete', expense_id=exp[0]) }}" style="color: var(--danger-color); text-decoration: none;" title="Delete"><i class="fas fa-trash-alt"></i></a></td>
                             </tr>
                             {% else %}
-                            <tr><td colspan="4" style="text-align: center; padding: 20px; color: #a0aec0;">No expenses logged.</td></tr>
+                            <tr><td colspan="4" style="text-align: center; padding: 1.5rem; color: var(--text-muted);">No expenses logged.</td></tr>
                             {% endfor %}
                         </tbody>
                     </table>
@@ -104,28 +106,30 @@
             </div>
 
             <!-- Sales Table -->
-            <div class="list-card" style="background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
-                <h3 style="margin-bottom: 20px; color: #2d3748; font-weight: 700; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px;">Recent Sales</h3>
-                <div style="overflow-x: auto;">
-                    <table class="data-table" style="width: 100%; text-align: left; border-collapse: collapse;">
+            <div class="list-card">
+                <div class="list-card-header">
+                    <h3 style="font-weight: 700;">Recent Sales</h3>
+                </div>
+                <div class="data-table-wrapper">
+                    <table class="data-table">
                         <thead>
-                            <tr style="background: #f7fafc; color: #4a5568;">
-                                <th style="padding: 12px; border-bottom: 2px solid #e2e8f0;">Date</th>
-                                <th style="padding: 12px; border-bottom: 2px solid #e2e8f0;">Crop</th>
-                                <th style="padding: 12px; border-bottom: 2px solid #e2e8f0;">Total Sale</th>
-                                <th style="padding: 12px; border-bottom: 2px solid #e2e8f0;"></th>
+                            <tr>
+                                <th>Date</th>
+                                <th>Crop</th>
+                                <th>Total Sale</th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for sale in sales %}
-                            <tr style="border-bottom: 1px solid #edf2f7; transition: background 0.2s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
-                                <td style="padding: 12px; color: #718096; font-size: 0.95rem;">{{ sale[5] }}</td>
-                                <td style="padding: 12px; font-weight: 500;">{{ sale[6] }}</td>
-                                <td style="padding: 12px; color: #38a169; font-weight: 600; white-space: nowrap;">₹{{ "%.2f"|format(sale[3] * sale[4]) }}</td>
-                                <td style="padding: 12px;"><a href="{{ url_for('dashboard.sale_delete', sale_id=sale[0]) }}" style="color: #e53e3e; text-decoration: none;" title="Delete"><i class="fas fa-trash-alt"></i></a></td>
+                            <tr>
+                                <td style="color: var(--text-muted); font-size: 0.95rem;">{{ sale[5] }}</td>
+                                <td style="font-weight: 500;">{{ sale[6] }}</td>
+                                <td style="color: var(--success-color); font-weight: 600; white-space: nowrap;">₹{{ "%.2f"|format(sale[3] * sale[4]) }}</td>
+                                <td><a href="{{ url_for('dashboard.sale_delete', sale_id=sale[0]) }}" style="color: var(--danger-color); text-decoration: none;" title="Delete"><i class="fas fa-trash-alt"></i></a></td>
                             </tr>
                             {% else %}
-                            <tr><td colspan="4" style="text-align: center; padding: 20px; color: #a0aec0;">No sales logged.</td></tr>
+                            <tr><td colspan="4" style="text-align: center; padding: 1.5rem; color: var(--text-muted);">No sales logged.</td></tr>
                             {% endfor %}
                         </tbody>
                     </table>

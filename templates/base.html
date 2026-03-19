@@ -17,10 +17,15 @@
         <div class="nav-brand">
             <a href="/">🍃 AgroLedger</a>
         </div>
-        <div class="hamburger" id="hamburger">
-            <i class="fas fa-bars"></i>
+        <div class="nav-controls">
+            <button class="theme-toggle-btn" id="theme-toggle" aria-label="Toggle Dark Mode">
+                <i class="fas fa-moon"></i>
+            </button>
+            <div class="hamburger" id="hamburger">
+                <i class="fas fa-bars"></i>
+            </div>
         </div>
-        <div class="nav-links">
+        <div class="nav-links" id="nav-links">
             {% if session.get('user_email') %}
                 <a href="{{ url_for('dashboard.dashboard_view') }}" class="nav-item"><i class="fas fa-chart-line"></i> Dashboard</a>
                 <a href="{{ url_for('auth.logout') }}" class="btn btn-secondary"><i class="fas fa-sign-out-alt"></i> Logout</a>
@@ -38,18 +43,50 @@
 
     <footer class="global-footer">
         <p>&copy; 2026 AgroLedger. Digitizing Agriculture.</p>
-        <p style="font-size: 0.85rem; margin-top: 8px; color: rgba(255,255,255,0.7);">Powered by <strong>Python, Flask, MySQL, HTML/CSS/JS</strong></p>
+        <p style="margin-top: 8px; font-weight: 500;">Powered by <strong>Python, Flask, MySQL, HTML/CSS/JS</strong></p>
     </footer>
 
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // Theme Toggle Logic
+            const themeToggleBtn = document.getElementById('theme-toggle');
+            const icon = themeToggleBtn.querySelector('i');
+            const rootHtml = document.documentElement;
+
+            // Check localStorage
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                rootHtml.setAttribute('data-theme', 'dark');
+                icon.classList.replace('fa-moon', 'fa-sun');
+            }
+
+            themeToggleBtn.addEventListener('click', () => {
+                const isDark = rootHtml.getAttribute('data-theme') === 'dark';
+                if (isDark) {
+                    rootHtml.removeAttribute('data-theme');
+                    localStorage.setItem('theme', 'light');
+                    icon.classList.replace('fa-sun', 'fa-moon');
+                } else {
+                    rootHtml.setAttribute('data-theme', 'dark');
+                    localStorage.setItem('theme', 'dark');
+                    icon.classList.replace('fa-moon', 'fa-sun');
+                }
+            });
+
+            // Hamburger Menu
             const hamburger = document.getElementById('hamburger');
-            const navLinks = document.querySelector('.nav-links');
+            const navLinks = document.getElementById('nav-links');
             if (hamburger) {
                 hamburger.addEventListener('click', () => {
                     navLinks.classList.toggle('active');
+                    const i = hamburger.querySelector('i');
+                    if (navLinks.classList.contains('active')) {
+                        i.classList.replace('fa-bars', 'fa-times');
+                    } else {
+                        i.classList.replace('fa-times', 'fa-bars');
+                    }
                 });
             }
         });

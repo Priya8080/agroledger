@@ -15,28 +15,28 @@
     </aside>
 
     <div class="dashboard-content">
-        <header class="content-header" style="background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.8)), url('{{ url_for('static', filename='images/dashboard_header.png') }}'); background-size: cover; background-position: center; padding: 4rem 2rem; border-radius: 12px; margin-bottom: 2rem; color: white; text-shadow: 2px 2px 6px rgba(0,0,0,0.9);">
-            <h1 style="color: white; margin-bottom: 0.5rem; font-size: 2.5rem;">Welcome Back!</h1>
-            <p style="font-size: 1.1rem; opacity: 0.9;">Here is your farming overview.</p>
+        <header class="content-header" style="background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.8)), url('{{ url_for('static', filename='images/dashboard_header.png') }}'); background-size: cover; background-position: center; padding: 4rem 2.5rem; border-radius: 12px; margin-bottom: 2rem; color: white; text-shadow: 2px 2px 6px rgba(0,0,0,0.9);">
+            <h1 class="animate-fade-up" style="color: white; margin-bottom: 0.5rem; font-size: 2.5rem;">Welcome Back!</h1>
+            <p class="animate-fade-up" style="font-size: 1.1rem; opacity: 0.9; animation-delay: 0.1s;">Here is your farming overview.</p>
         </header>
 
         {% with messages = get_flashed_messages() %}
         {% if messages %}
             <div class="messages">
                 {% for message in messages %}
-                <div class="alert highlight-msg">{{ message }}</div>
+                <div class="flashes alert highlight-msg">{{ message }}</div>
                 {% endfor %}
             </div>
         {% endif %}
         {% endwith %}
         
         <div class="card-grid">
-            <div class="card stat-card" style="align-items: flex-start;">
+            <div class="card stat-card">
                 <div class="card-icon"><i class="fas fa-seedling"></i></div>
                 <div class="card-info">
                     <h3>Active Crops</h3>
                     <p class="stat">{{ active_crops_count }}</p>
-                    <small style="color: #718096; font-size: 0.9rem;">grown on <strong>{{ "%.2f"|format(total_land_area) }}</strong> acres of land</small>
+                    <small style="color: var(--text-muted); font-size: 0.9rem;">grown on <strong>{{ "%.2f"|format(total_land_area) }}</strong> acres</small>
                 </div>
             </div>
             <div class="card stat-card">
@@ -47,17 +47,17 @@
                 </div>
             </div>
             <div class="card stat-card">
-                <div class="card-icon"><i class="fas fa-wallet" style="color: {{ 'green' if net_profit >= 0 else 'red' }};"></i></div>
+                <div class="card-icon" style="color: {{ 'var(--success-color)' if net_profit >= 0 else 'var(--danger-color)' }}; background: {{ 'rgba(16,185,129,0.1)' if net_profit >= 0 else 'rgba(239,68,68,0.1)' }};"><i class="fas fa-wallet"></i></div>
                 <div class="card-info">
                     <h3>Net Profit</h3>
-                    <p class="stat" style="color: {{ 'green' if net_profit >= 0 else 'red' }};">₹{{ "%.2f"|format(net_profit) }}</p>
+                    <p class="stat" style="color: {{ 'var(--success-color)' if net_profit >= 0 else 'var(--danger-color)' }};">₹{{ "%.2f"|format(net_profit) }}</p>
                 </div>
             </div>
         </div>
 
         <!-- Profit and Loss Chart Area -->
-        <div class="chart-container" style="margin-top: 2rem; background: var(--card-bg); padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
-            <h3 style="margin-bottom: 1.5rem; font-weight: 600; color: var(--text-color);">Overall Financial Visualization</h3>
+        <div class="form-card chart-container" style="margin-top: 2rem;">
+            <h3 style="margin-bottom: 1.5rem; font-weight: 600;">Overall Financial Visualization</h3>
             <div style="position: relative; height: 300px; width: 100%;">
                 <canvas id="profitChart"></canvas>
             </div>
@@ -71,10 +71,16 @@
         var totalSales = {{ total_sales | default(0) }};
         var totalExpenses = {{ total_expenses | default(0) }};
         
-        // Only draw chart if there is data, otherwise show empty state
         if(totalSales === 0 && totalExpenses === 0) {
-            totalSales = 0.01; // Avoid completely empty chart visually if needed, or handle graceully
+            totalSales = 0.01;
         }
+
+        // Get computed variables
+        const rootStyles = getComputedStyle(document.documentElement);
+        const successColor = rootStyles.getPropertyValue('--success-color').trim() || '#10b981';
+        const dangerColor = rootStyles.getPropertyValue('--danger-color').trim() || '#ef4444';
+        const cardBg = rootStyles.getPropertyValue('--card-bg').trim() || '#ffffff';
+        const textMuted = rootStyles.getPropertyValue('--text-muted').trim() || '#64748b';
 
         var profitChart = new Chart(ctx, {
             type: 'doughnut',
@@ -82,10 +88,10 @@
                 labels: ['Earnings (Sales)', 'Expenses'],
                 datasets: [{
                     data: [totalSales, totalExpenses],
-                    backgroundColor: ['#2e7d32', '#d32f2f'],
-                    hoverBackgroundColor: ['#1b5e20', '#b71c1c'],
+                    backgroundColor: [successColor, dangerColor],
+                    hoverBackgroundColor: [successColor, dangerColor],
                     borderWidth: 2,
-                    borderColor: '#ffffff'
+                    borderColor: cardBg
                 }]
             },
             options: {
@@ -96,20 +102,15 @@
                     legend: {
                         position: 'bottom',
                         labels: {
-                            font: {
-                                family: "'Inter', sans-serif",
-                                size: 14
-                            },
-                            color: '#4a5568'
+                            font: { family: "'Inter', sans-serif", size: 14 },
+                            color: textMuted
                         }
                     },
                     tooltip: {
                         callbacks: {
                             label: function(context) {
                                 let label = context.label || '';
-                                if (label) {
-                                    label += ': ';
-                                }
+                                if (label) { label += ': '; }
                                 if (context.parsed !== null) {
                                     label += '₹' + context.parsed;
                                 }
@@ -120,6 +121,19 @@
                 }
             }
         });
+        
+        // Update chart colors when theme toggles
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if(mutation.attributeName === 'data-theme') {
+                    const newRootStyles = getComputedStyle(document.documentElement);
+                    profitChart.data.datasets[0].borderColor = newRootStyles.getPropertyValue('--card-bg').trim() || '#ffffff';
+                    profitChart.options.plugins.legend.labels.color = newRootStyles.getPropertyValue('--text-muted').trim() || '#64748b';
+                    profitChart.update();
+                }
+            });
+        });
+        observer.observe(document.documentElement, { attributes: true });
     });
 </script>
 {% endblock %}

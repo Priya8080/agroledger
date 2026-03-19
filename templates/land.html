@@ -15,16 +15,16 @@
     </aside>
 
     <div class="dashboard-content">
-        <header class="content-header" style="background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.8)), url('{{ url_for('static', filename='images/land_header.png') }}'); background-size: cover; background-position: center; padding: 4rem 2rem; border-radius: 12px; margin-bottom: 2rem; color: white; text-shadow: 2px 2px 6px rgba(0,0,0,0.9);">
-            <h1 style="color: white; margin-bottom: 0.5rem; font-size: 2.5rem;">Land Management</h1>
-            <p style="font-size: 1.1rem; opacity: 0.9;">Manage your land records and boundaries professionally.</p>
+        <header class="content-header" style="background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.8)), url('{{ url_for('static', filename='images/land_header.png') }}'); background-size: cover; background-position: center; padding: 4rem 2.5rem; border-radius: 12px; margin-bottom: 2rem; color: white; text-shadow: 2px 2px 6px rgba(0,0,0,0.9);">
+            <h1 class="animate-fade-up" style="color: white; margin-bottom: 0.5rem; font-size: 2.5rem;">Land Management</h1>
+            <p class="animate-fade-up" style="font-size: 1.1rem; opacity: 0.9; animation-delay: 0.1s;">Manage your land records and boundaries professionally.</p>
         </header>
 
         {% with messages = get_flashed_messages() %}
         {% if messages %}
             <div class="messages">
                 {% for message in messages %}
-                <div class="alert highlight-msg">{{ message }}</div>
+                <div class="flashes alert highlight-msg">{{ message }}</div>
                 {% endfor %}
             </div>
         {% endif %}
@@ -41,8 +41,10 @@
         </div>
 
         <div class="list-card" style="margin-top: 2rem;">
-            <h3 style="margin-bottom: 1rem; color: #2d3748; font-weight: 700; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px;">Your Lands</h3>
-            <div style="overflow-x: auto;">
+            <div class="list-card-header">
+                <h3 style="font-weight: 700;">Your Lands</h3>
+            </div>
+            <div class="data-table-wrapper">
             <table class="data-table">
                 <thead>
                     <tr>
@@ -60,11 +62,11 @@
                         <td>{{ land[2] }}</td>
                         <td>{{ land[3] }}</td>
                         <td>{{ land[4] }}</td>
-                        <td><a href="{{ url_for('dashboard.land_delete', land_id=land[0]) }}" class="btn btn-danger btn-sm">Delete</a></td>
+                        <td><a href="{{ url_for('dashboard.land_delete', land_id=land[0]) }}" class="btn btn-secondary btn-sm">Delete</a></td>
                     </tr>
                     {% else %}
                     <tr>
-                        <td colspan="5" style="text-align: center;">No land records found.</td>
+                        <td colspan="5" style="text-align: center; color: var(--text-muted);">No land records found.</td>
                     </tr>
                     {% endfor %}
                 </tbody>
