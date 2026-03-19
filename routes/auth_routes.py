@@ -14,13 +14,18 @@ def register():
 
             existing_user = get_user_by_email(email)
             if existing_user:
-                flash("Email already registered.")
+                # Check verification status to give a precise error message
+                is_verified = existing_user[5] if isinstance(existing_user, tuple) else existing_user.get('is_verified')
+                if not is_verified:
+                    flash("Your account is currently awaiting admin approval.")
+                else:
+                    flash("Email already registered. Please login.")
                 return redirect(url_for('auth.register'))
 
-            # Directly create the user without OTP
-            create_user(name, email, phone, password, is_verified=True)
+            # Create user requiring approval
+            create_user(name, email, phone, password, is_verified=False)
 
-            flash("Registration successful! Please login.")
+            flash("Registration successful! Your account is awaiting admin approval.")
             return redirect(url_for('auth.login'))
 
         except Exception as e:
