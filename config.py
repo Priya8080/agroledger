@@ -3,12 +3,12 @@ import os
 class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'super-secret-agroledger-key'
     
-    # MySQL Settings
-    MYSQL_HOST = 'localhost'
-    MYSQL_USER = 'root'
-    MYSQL_PASSWORD = 'Weirdo@09' # Your DB Password
-    MYSQL_DB = 'agroledger'
-    MYSQL_PORT = 3306
+    # MySQL Settings (Fallback to localhost for local development)
+    MYSQL_HOST = os.environ.get('MYSQL_HOST', 'localhost')
+    MYSQL_USER = os.environ.get('MYSQL_USER', 'root')
+    MYSQL_PASSWORD = os.environ.get('MYSQL_PASSWORD', 'Weirdo@09') # Local DB Password
+    MYSQL_DB = os.environ.get('MYSQL_DB', 'agroledger')
+    MYSQL_PORT = int(os.environ.get('MYSQL_PORT', 3306))
 
     # Mail Settings (for OTP)
     MAIL_SERVER = 'smtp.gmail.com'
