@@ -7,7 +7,7 @@
     <div class="hero-overlay"></div>
     <div class="hero-content container">
         <h1 class="hero-title">Empowering Agriculture with <span class="highlight">Precision</span></h1>
-        <p class="hero-subtitle">Your complete, professional agriculture financial management system.</p>
+        <p class="hero-subtitle">Your complete, professional agriculture financial management system. Keep track of your land, monitor crop cycles, and analyze profit and loss all in one beautifully designed platform. Register today to take control of your farming business.</p>
         <div class="hero-btns">
             <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-lg">Get Started Free</a>
             <a href="{{ url_for('auth.login') }}" class="btn btn-outline btn-lg">Log In</a>
@@ -16,20 +16,48 @@
 </div>
 
 <div class="features-preview container">
-    <div class="feature-card">
+    <div class="feature-card" onclick="toggleFeature('land-desc')" style="cursor: pointer;">
         <div class="feature-icon"><i class="fas fa-map-marked-alt"></i></div>
         <h3>Land Management</h3>
         <p>Digitize your land parcels and track usage precisely.</p>
+        <div id="land-desc" style="display: none; margin-top: 1rem; color: var(--text-muted); font-size: 0.95rem; text-align: left; border-top: 1px solid var(--border-color); padding-top: 1rem; line-height: 1.6;">
+            Farmers can add multiple land parcels, specifying the area, location, and soil type. This helps in keeping a clear record of available resources and planning crop distribution efficiently based on land characteristics.
+        </div>
+        <div class="click-hint" style="margin-top: 0.75rem; font-size: 0.85rem; color: var(--primary-color); font-weight: 600;"><i class="fas fa-chevron-down"></i> Click to learn more</div>
     </div>
-    <div class="feature-card">
+    <div class="feature-card" onclick="toggleFeature('crop-desc')" style="cursor: pointer;">
         <div class="feature-icon"><i class="fas fa-seedling"></i></div>
         <h3>Crop Tracking</h3>
         <p>Monitor crop performance, yield, and financial turnover.</p>
+        <div id="crop-desc" style="display: none; margin-top: 1rem; color: var(--text-muted); font-size: 0.95rem; text-align: left; border-top: 1px solid var(--border-color); padding-top: 1rem; line-height: 1.6;">
+            Record the crops sown each season, expected yields, and harvest timelines. This enables farmers to maintain a chronological history of their agricultural activities, track workers on logs, and predict future outcomes.
+        </div>
+        <div class="click-hint" style="margin-top: 0.75rem; font-size: 0.85rem; color: var(--primary-color); font-weight: 600;"><i class="fas fa-chevron-down"></i> Click to learn more</div>
     </div>
-    <div class="feature-card">
+    <div class="feature-card" onclick="toggleFeature('finance-desc')" style="cursor: pointer;">
         <div class="feature-icon"><i class="fas fa-chart-pie"></i></div>
         <h3>Profit & Loss</h3>
         <p>Make data-driven decisions with rich visual analytics.</p>
+        <div id="finance-desc" style="display: none; margin-top: 1rem; color: var(--text-muted); font-size: 0.95rem; text-align: left; border-top: 1px solid var(--border-color); padding-top: 1rem; line-height: 1.6;">
+            Log all expenses (fertilizers, machinery, labour wages) and harvest sales. The system automatically calculates your net profit or loss, presenting it in clear, dynamic charts so you can see exactly how profitable your farming operations are.
+        </div>
+        <div class="click-hint" style="margin-top: 0.75rem; font-size: 0.85rem; color: var(--primary-color); font-weight: 600;"><i class="fas fa-chevron-down"></i> Click to learn more</div>
     </div>
 </div>
+
+<script>
+function toggleFeature(id) {
+    const el = document.getElementById(id);
+    const hint = el.nextElementSibling;
+    const icon = hint.querySelector('i');
+    
+    if(el.style.display === 'none') {
+        el.style.display = 'block';
+        hint.innerHTML = '<i class="fas fa-chevron-up"></i> Show less';
+    } else {
+        el.style.display = 'none';
+        hint.innerHTML = '<i class="fas fa-chevron-down"></i> Click to learn more';
+    }
+}
+</script>
 {% endblock %}

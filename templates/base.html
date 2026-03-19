@@ -26,11 +26,11 @@
             </div>
         </div>
         <div class="nav-links" id="nav-links">
+            <a href="/" class="nav-item">Home</a>
             {% if session.get('user_email') %}
                 <a href="{{ url_for('dashboard.dashboard_view') }}" class="nav-item"><i class="fas fa-chart-line"></i> Dashboard</a>
-                <a href="{{ url_for('auth.logout') }}" class="btn btn-secondary"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                <a href="{{ url_for('auth.logout') }}" class="btn btn-secondary nav-cta"><i class="fas fa-sign-out-alt"></i> Logout</a>
             {% else %}
-                <a href="/" class="nav-item">Home</a>
                 <a href="{{ url_for('auth.login') }}" class="nav-item">Login</a>
                 <a href="{{ url_for('auth.register') }}" class="btn btn-primary nav-cta">Register</a>
             {% endif %}
@@ -43,7 +43,6 @@
 
     <footer class="global-footer">
         <p>&copy; 2026 AgroLedger. Digitizing Agriculture.</p>
-        <p style="margin-top: 8px; font-weight: 500;">Powered by <strong>Python, Flask, MySQL, HTML/CSS/JS</strong></p>
     </footer>
 
     <!-- Chart.js -->
