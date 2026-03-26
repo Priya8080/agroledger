@@ -1,80 +1,228 @@
 {% extends 'base.html' %}
 {% block title %}AgroLedger - Labour Management{% endblock %}
-{% block body_class %}dashboard-page{% endblock %}
 
 {% block content %}
-<div class="dashboard-layout">
-    <aside class="sidebar">
-        <ul>
-            <li><a href="{{ url_for('dashboard.dashboard_view') }}"><i class="fas fa-home"></i> Overview</a></li>
-            <li><a href="{{ url_for('dashboard.land_view') }}"><i class="fas fa-map-marked-alt"></i> Land Management</a></li>
-            <li><a href="{{ url_for('dashboard.crops_view') }}"><i class="fas fa-seedling"></i> Crops</a></li>
-            <li class="active"><a href="{{ url_for('dashboard.labour_view') }}"><i class="fas fa-users"></i> Labour Logs</a></li>
-            <li><a href="{{ url_for('dashboard.financials_view') }}"><i class="fas fa-chart-line"></i> Financials</a></li>
-            {% if session.get('user_email') == config['ADMIN_EMAIL'] %}
-            <li><a href="{{ url_for('dashboard.admin_users') }}"><i class="fas fa-user-shield"></i> User Approvals</a></li>
-            {% endif %}
-        </ul>
+<div class="page-wrapper">
+    
+    <!-- Collapsible Sidebar for Desktop -->
+    <aside class="sidebar-wrapper glass-card" style="padding: 1.5rem;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem;">
+            <h2 style="font-size: 0.875rem; font-weight: 700; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.05em;">Menu</h2>
+        </div>
+        <nav style="display: flex; flex-direction: column; gap: 0.5rem;">
+            <a href="{{ url_for('dashboard.dashboard_view') }}" class="sidebar-menu-btn">
+                <div class="sidebar-icon"><i class="fas fa-home"></i></div>
+                <span>Overview</span>
+            </a>
+            <a href="{{ url_for('dashboard.land_view') }}" class="sidebar-menu-btn">
+                <div class="sidebar-icon"><i class="fas fa-map-marked-alt"></i></div>
+                <span>Land</span>
+            </a>
+            <a href="{{ url_for('dashboard.crops_view') }}" class="sidebar-menu-btn">
+                <div class="sidebar-icon"><i class="fas fa-seedling"></i></div>
+                <span>Crops</span>
+            </a>
+            <a href="{{ url_for('dashboard.labour_view') }}" class="sidebar-menu-btn active">
+                <div class="sidebar-icon"><i class="fas fa-users"></i></div>
+                <span>Labour Logs</span>
+            </a>
+            <a href="{{ url_for('dashboard.financials_view') }}" class="sidebar-menu-btn">
+                <div class="sidebar-icon"><i class="fas fa-chart-line"></i></div>
+                <span>Financials</span>
+            </a>
+        </nav>
     </aside>
 
-    <div class="dashboard-content">
-        <header class="content-header">
-            <h1>Labour Management</h1>
-            <p>Log worker details and wages paid.</p>
+    <!-- Main Content Area -->
+    <div class="content-wrapper">
+        <!-- Header Image Card -->
+        <header class="header-card group">
+            <img src="{{ url_for('static', filename='images/dashboard_header.png') }}" class="header-img">
+            <div class="header-overlay"></div>
+            <div class="header-content">
+                <span class="tag-pill">Workforce</span>
+                <h1 class="header-title">Labour Logs</h1>
+                <p class="header-subtitle">Manage farm worker details and wage payments securely.</p>
+            </div>
         </header>
 
         {% with messages = get_flashed_messages() %}
         {% if messages %}
-            <div class="messages">
+            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
                 {% for message in messages %}
-                <div class="alert highlight-msg">{{ message }}</div>
+                <div class="glass" style="padding: 1rem; border-radius: 12px; font-size: 0.875rem; display: flex; align-items: center; gap: 0.75rem; background: rgba(129,199,132,0.2); color: var(--agro-dark);">
+                    <i class="fas fa-info-circle" style="font-size: 1.125rem;"></i> {{ message }}
+                </div>
                 {% endfor %}
             </div>
         {% endif %}
         {% endwith %}
 
-        <div class="form-card">
-            <h3>Add Labour Log</h3>
-            <form action="{{ url_for('dashboard.labour_view') }}" method="POST" class="form-grid">
-                <input type="text" name="worker_name" placeholder="Worker Name" required>
-                <input type="date" name="work_date" required>
-                <input type="date" name="end_date" placeholder="End Date (Optional)">
-                <input type="number" step="0.01" name="wages_paid" placeholder="Wages Paid (₹)" required>
-                <button type="submit" class="btn btn-primary">Add Log</button>
-            </form>
-        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem;">
+            <!-- Left Column: Forms -->
+            <div style="display: flex; flex-direction: column; gap: 2rem;">
+                
+                <!-- Add Labour Log Card -->
+                <div class="glass-card" style="padding: 1.5rem; border-top: 4px solid #06b6d4;">
+                    <h3 style="font-size: 1.125rem; font-weight: 700; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.75rem;">
+                        <div style="width: 40px; height: 40px; border-radius: 12px; background: rgba(6, 182, 212, 0.1); color: #06b6d4; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-user-plus"></i>
+                        </div>
+                        Add Labour Log
+                    </h3>
+                    
+                    <form action="{{ url_for('dashboard.labour_view') }}" method="POST" style="display: flex; flex-direction: column; gap: 1rem;">
+                        <input type="text" name="worker_name" placeholder="Worker Name" required class="form-input">
+                        
+                        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                            <div style="flex: 1; min-width: 120px; position: relative;">
+                                <label style="position: absolute; font-size: 10px; text-transform: uppercase; font-weight: 700; color: var(--text-light); top: 0.5rem; left: 1rem;">Start Date</label>
+                                <input type="date" name="work_date" required class="form-input" style="padding-top: 1.5rem; padding-bottom: 0.5rem;">
+                            </div>
+                            <div style="flex: 1; min-width: 120px; position: relative;">
+                                <label style="position: absolute; font-size: 10px; text-transform: uppercase; font-weight: 700; color: var(--text-light); top: 0.5rem; left: 1rem;">End Date (Opt)</label>
+                                <input type="date" name="end_date" class="form-input" style="padding-top: 1.5rem; padding-bottom: 0.5rem;">
+                            </div>
+                        </div>
 
-        <div class="list-card">
-            <h3>Recent Labour Logs</h3>
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Worker Name</th>
-                        <th>Work Date</th>
-                        <th>End Date</th>
-                        <th>Wages Paid (₹)</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for log in labour_logs %}
-                    <tr>
-                        <td>{{ loop.index }}</td>
-                        <td>{{ log[2] }}</td>
-                        <td>{{ log[3] }}</td>
-                        <td>{{ log[4] if log[4] else 'N/A' }}</td>
-                        <td>₹{{ log[5] }}</td>
-                        <td><a href="{{ url_for('dashboard.labour_delete', labour_id=log[0]) }}" class="btn btn-danger btn-sm">Delete</a></td>
-                    </tr>
-                    {% else %}
-                    <tr>
-                        <td colspan="5" style="text-align: center;">No labour records found.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                        <div style="position: relative;">
+                            <div style="position: absolute; top: 50%; transform: translateY(-50%); left: 1rem; pointer-events: none; color: var(--text-light);">₹</div>
+                            <input type="number" step="0.01" name="wages_paid" placeholder="Wages Paid" required class="form-input" style="padding-left: 2rem;">
+                        </div>
+                        
+                        <button type="submit" class="btn btn-secondary" style="width: 100%; padding: 0.75rem; border-color: rgba(6,182,212,0.3); color: #06b6d4; font-weight: 700; margin-top: 0.5rem;">
+                            Add Log
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Right Column: Tables (Takes remaining width automatically in grid) -->
+            <div style="display: flex; flex-direction: column; gap: 2rem; grid-column: span 2;">
+                
+                <!-- Recent Labour Logs Table -->
+                <div class="glass-card" style="padding: 0; overflow: hidden; display: flex; flex-direction: column; height: 100%;">
+                    
+                    <div style="padding: 1.25rem; border-bottom: 1px solid var(--border-color); background: rgba(0,0,0,0.02); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                        <h3 style="font-size: 1.125rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem;"><i class="fas fa-clipboard-list" style="color: #06b6d4;"></i> Active Logs</h3>
+                        <span style="padding: 0.25rem 0.75rem; border-radius: 999px; background: rgba(6, 182, 212, 0.1); color: #06b6d4; font-size: 0.75rem; font-weight: 700; text-transform: uppercase;" id="logCount">{{ labour_logs|length }} Workers</span>
+                    </div>
+
+                    <!-- Filter Area -->
+                    <div style="padding: 1.25rem; border-bottom: 1px solid var(--border-color); display: flex; gap: 1rem; flex-wrap: wrap; background: rgba(0,0,0,0.01);">
+                        <div style="flex: 1; min-width: 150px; position: relative;">
+                            <i class="fas fa-search" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-light);"></i>
+                            <input type="text" id="searchName" placeholder="Search by name..." class="form-input" style="padding-left: 2.5rem; margin-bottom: 0;">
+                        </div>
+                        <div style="flex: 1; min-width: 150px;">
+                            <input type="month" id="searchMonth" class="form-input" style="margin-bottom: 0;" title="Search by Month">
+                        </div>
+                        <div style="flex: 1; min-width: 150px;">
+                            <input type="date" id="searchDate" class="form-input" style="margin-bottom: 0;" title="Search by Exact Date">
+                        </div>
+                        <button type="button" class="btn btn-secondary" onclick="clearFilters()" style="padding: 0.5rem 1rem;">Clear</button>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead style="background: rgba(0,0,0,0.02); text-transform: uppercase;">
+                                <tr>
+                                    <th>Worker Name</th>
+                                    <th>Dates (Start - End)</th>
+                                    <th style="text-align: right;">Wages Paid</th>
+                                    <th style="text-align: center; width: 64px;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="labourTableBody">
+                                {% for log in labour_logs %}
+                                <tr style="transition: var(--transition);" class="labour-row">
+                                    <td style="font-weight: 500;">
+                                        <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                            <div style="width: 32px; height: 32px; border-radius: 50%; background: rgba(6, 182, 212, 0.1); color: #06b6d4; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700;">
+                                                {{ log[2][0]|upper }}
+                                            </div>
+                                            <span class="worker-name">{{ log[2] }}</span>
+                                        </div>
+                                    </td>
+                                    <td style="color: var(--text-light);">
+                                        <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                                            <span class="work-date">{{ log[3] }}</span>
+                                            <i class="fas fa-arrow-right" style="font-size: 0.75rem; opacity: 0.5;"></i>
+                                            <span style="{% if not log[4] %}font-style: italic; opacity: 0.7;{% endif %}">{{ log[4] if log[4] else 'Ongoing' }}</span>
+                                        </div>
+                                    </td>
+                                    <td style="font-weight: 700; text-align: right;">₹{{ "%.2f"|format(log[5]) }}</td>
+                                    <td style="text-align: center;">
+                                        <a href="{{ url_for('dashboard.labour_delete', labour_id=log[0]) }}" style="display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 8px; color: var(--text-light); transition: var(--transition);" onmouseover="this.style.backgroundColor='rgba(239,68,68,0.1)';this.style.color='#ef4444';" onmouseout="this.style.backgroundColor='transparent';this.style.color='var(--text-light)';" title="Delete">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr id="noRecordsRow">
+                                    <td colspan="4" style="padding: 4rem 1.5rem; text-align: center; color: var(--text-light);">
+                                        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                                            <i class="fas fa-users-slash" style="font-size: 2.25rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                                            <p style="font-size: 1.125rem; font-weight: 500; color: var(--text-color); margin-bottom: 0.25rem;">No labour records found</p>
+                                            <p style="font-size: 0.875rem;">Start by adding a labour log using the form on the left.</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const searchName = document.getElementById("searchName");
+        const searchMonth = document.getElementById("searchMonth");
+        const searchDate = document.getElementById("searchDate");
+        const tableRows = document.querySelectorAll(".labour-row");
+        const logCount = document.getElementById("logCount");
+        
+        function filterTable() {
+            let nameVal = searchName.value.toLowerCase().trim();
+            let monthVal = searchMonth.value; // format: "YYYY-MM"
+            let dateVal = searchDate.value;   // format: "YYYY-MM-DD"
+            
+            let visibleCount = 0;
+
+            tableRows.forEach(row => {
+                const workerName = row.querySelector(".worker-name").textContent.toLowerCase();
+                const rawDate = row.querySelector(".work-date").textContent.trim(); // "YYYY-MM-DD" Assuming SQL format
+                
+                let matchesName = workerName.includes(nameVal);
+                let matchesMonth = monthVal === "" || rawDate.startsWith(monthVal);
+                let matchesDate = dateVal === "" || rawDate === dateVal;
+
+                if (matchesName && matchesMonth && matchesDate) {
+                    row.style.display = "";
+                    visibleCount++;
+                } else {
+                    row.style.display = "none";
+                }
+            });
+
+            logCount.textContent = visibleCount + " Worker" + (visibleCount !== 1 ? "s" : "");
+        }
+
+        searchName.addEventListener("input", filterTable);
+        searchMonth.addEventListener("change", filterTable);
+        searchDate.addEventListener("change", filterTable);
+        
+        window.clearFilters = function() {
+            searchName.value = "";
+            searchMonth.value = "";
+            searchDate.value = "";
+            filterTable();
+        };
+    });
+</script>
 {% endblock %}

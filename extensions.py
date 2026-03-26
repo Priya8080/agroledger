@@ -1,5 +1,8 @@
 import pymysql
 from flask import g, current_app
+from flask_mail import Mail
+
+mail = Mail()
 
 class MySQL:
     def __init__(self, app=None):

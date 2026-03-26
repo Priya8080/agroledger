@@ -1,7 +1,20 @@
 from flask import Blueprint, render_template, request, redirect, session, flash, url_for
-from models.user import create_user, get_user_by_email
+from werkzeug.security import generate_password_hash, check_password_hash
+import random
+import re
+from datetime import datetime, timedelta
+from models.user import create_user, get_user_by_email, update_user_password
 
 auth = Blueprint('auth', __name__)
+
+def is_valid_email(email):
+    return re.match(r"[^@]+@[^@]+\.[^@]+", email)
+
+def is_strong_password(password):
+    return (len(password) >= 8 and
+            re.search(r"[A-Z]", password) and
+            re.search(r"[a-z]", password) and
+            re.search(r"[0-9]", password))
 
 @auth.route('/register', methods=['GET', 'POST'])
 def register():
@@ -12,25 +25,32 @@ def register():
             phone = request.form['phone']
             password = request.form['password']
 
+            if not is_valid_email(email):
+                flash("Invalid email format.")
+                return render_template("register.html")
+            
+            if not is_strong_password(password):
+                flash("Password must be at least 8 characters long, contain an uppercase letter, a lowercase letter, and a number.")
+                return render_template("register.html")
+
             existing_user = get_user_by_email(email)
+            hashed_pw = generate_password_hash(password)
+
             if existing_user:
-    
-                is_verified = existing_user[5] if isinstance(existing_user, tuple) else existing_user.get('is_verified')
-                if not is_verified:
-                    flash("Your account is currently awaiting admin approval.")
-                else:
-                    flash("Email already registered. Please login.")
+                flash("Email already registered. Please login.")
                 return redirect(url_for('auth.register'))
 
-            create_user(name, email, phone, password, is_verified=False)
+            create_user(name, email, phone, hashed_pw)
 
-            flash("Registration successful! Your account is awaiting admin approval.")
+            flash("Registration successful! You can now log in.")
             return redirect(url_for('auth.login'))
 
         except Exception as e:
             flash(f"Error: {e}")
 
     return render_template("register.html")
+
+# OTP endpoints removed
 
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
@@ -41,21 +61,20 @@ def login():
 
             user = get_user_by_email(email)
             if user:
-                
+                user_id = user[0]
+                db_password = user[4] if isinstance(user, tuple) else user.get('password')
                 is_valid = False
-                if isinstance(user, tuple):
-                    is_valid = (user[4] == password)
-                else:
-                    is_valid = (user.get('password') == password)
+                if db_password.startswith('scrypt:') or db_password.startswith('pbkdf2:'):
+                    is_valid = check_password_hash(db_password, password)
+                else: 
+                    # Backwards compatibility for plain text
+                    if db_password == password:
+                        is_valid = True
+                        update_user_password(user_id, generate_password_hash(password))
 
                 if is_valid:
-                    
-                    verified = user[5] if isinstance(user, tuple) else user.get('is_verified')
-                    if verified:
-                        session['user_email'] = email
-                        return redirect(url_for('dashboard.dashboard_view'))
-                    else:
-                        flash("Account not verified.")
+                    session['user_email'] = email
+                    return redirect(url_for('dashboard.dashboard_view'))
                 else:
                     flash("Invalid email or password")
             else:

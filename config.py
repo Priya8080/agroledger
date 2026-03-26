@@ -16,3 +16,10 @@ class Config:
     # Admin System
     ADMIN_EMAIL = os.environ.get('ADMIN_EMAIL', 'priya8080@gmail.com')
 
+    # Flask-Mail Settings
+    MAIL_SERVER = os.environ.get('MAIL_SERVER', 'smtp.gmail.com')
+    MAIL_PORT = int(os.environ.get('MAIL_PORT', 587))
+    MAIL_USE_TLS = os.environ.get('MAIL_USE_TLS', 'True').lower() in ['true', '1', 't']
+    MAIL_USERNAME = os.environ.get('MAIL_USERNAME', 'priya8080@gmail.com') # Fallback dummy or use env
+    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD', '') # Must be set via env var
+    MAIL_DEFAULT_SENDER = os.environ.get('MAIL_DEFAULT_SENDER', MAIL_USERNAME)

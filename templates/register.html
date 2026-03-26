@@ -1,40 +1,67 @@
 {% extends 'base.html' %}
 {% block title %}AgroLedger - Register{% endblock %}
-{% block body_class %}auth-page{% endblock %}
 
 {% block content %}
-<div class="bg-overlay"></div>
-<div class="container auth-container">
-    <h2>Join AgroLedger</h2>
-    <p class="subtitle">Create an account to digitize your farming.</p>
-    
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            <ul class="flashes">
-            {% for message in messages %}
-                <li class="flash-item">{{ message }}</li>
-            {% endfor %}
-            </ul>
-        {% endif %}
-    {% endwith %}
+<div class="auth-container relative text-center">
+    <!-- Background Image -->
+    <div style="position: absolute; inset: 0; z-index: 0; opacity: 0.2; pointer-events: none;">
+        <img src="{{ url_for('static', filename='images/dashboard_header.png') }}" alt="Agriculture Background" style="width: 100%; height: 100%; object-fit: cover; filter: blur(2px);">
+    </div>
 
-    <form method="POST" action="{{ url_for('auth.register') }}">
-        <div class="input-group">
-            <input type="text" name="name" placeholder="Full Name" required>
+    <!-- Register Card -->
+    <div class="glass-card auth-card relative z-10" style="margin: 0 auto; text-align: left;">
+        <div class="text-center mb-6">
+            <div style="text-align: center; margin-bottom: 1rem; color: var(--agro-dark);">
+                <i class="fas fa-seedling" style="font-size: 3rem;"></i>
+            </div>
+            <h2 style="font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem;">Join AgroLedger</h2>
+            <p style="color: var(--text-light);">Create an account to digitize your farming.</p>
         </div>
-        <div class="input-group">
-            <input type="email" name="email" placeholder="Email Address" required>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="mb-4">
+                {% for message in messages %}
+                    <div class="bg-red-100 text-red" style="padding: 1rem; border-radius: 12px; font-size: 0.875rem; display: flex; align-items: center; gap: 0.5rem; border: 1px solid rgba(239, 68, 68, 0.3);">
+                        <i class="fas fa-exclamation-circle"></i> {{ message }}
+                    </div>
+                {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST" action="{{ url_for('auth.register') }}">
+            <div class="form-group">
+                <label for="name" class="form-label"><i class="fas fa-user" style="margin-right: 0.5rem; color: var(--text-light);"></i> Full Name</label>
+                <input type="text" id="name" name="name" required class="form-input" placeholder="John Doe">
+            </div>
+
+            <div class="form-group">
+                <label for="email" class="form-label"><i class="fas fa-envelope" style="margin-right: 0.5rem; color: var(--text-light);"></i> Email Address</label>
+                <input type="email" id="email" name="email" required class="form-input" placeholder="you@example.com">
+            </div>
+
+            <div class="form-group">
+                <label for="phone" class="form-label"><i class="fas fa-phone" style="margin-right: 0.5rem; color: var(--text-light);"></i> Phone Number</label>
+                <input type="text" id="phone" name="phone" required class="form-input" placeholder="+1 234 567 8900">
+            </div>
+
+            <div class="form-group">
+                <label for="password" class="form-label"><i class="fas fa-lock" style="margin-right: 0.5rem; color: var(--text-light);"></i> Password</label>
+                <input type="password" id="password" name="password" required class="form-input" placeholder="••••••••">
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%; padding: 1rem; font-size: 1.125rem; margin-top: 1.5rem;">
+                <i class="fas fa-user-plus mt-1"></i> Register
+            </button>
+        </form>
+
+        <div class="text-center" style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border-color);">
+            <p style="color: var(--text-light); font-size: 0.875rem;">
+                Already have an account? 
+                <a href="{{ url_for('auth.login') }}" style="color: var(--agro-dark); font-weight: 600; margin-left: 0.25rem;">Login</a>
+            </p>
         </div>
-        <div class="input-group">
-            <input type="text" name="phone" placeholder="Phone Number" required>
-        </div>
-        <div class="input-group">
-            <input type="password" name="password" placeholder="Password" required>
-        </div>
-        <button type="submit" class="btn btn-primary w-100">Register</button>
-    </form>
-    <div class="links mt-3">
-        <a href="{{ url_for('auth.login') }}">Already have an account? Login</a>
     </div>
 </div>
 {% endblock %}

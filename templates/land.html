@@ -1,79 +1,146 @@
 {% extends 'base.html' %}
 {% block title %}AgroLedger - Land Management{% endblock %}
-{% block body_class %}dashboard-page{% endblock %}
 
 {% block content %}
-<div class="dashboard-layout">
-    <aside class="sidebar">
-        <ul>
-            <li><a href="{{ url_for('dashboard.dashboard_view') }}"><i class="fas fa-home"></i> Overview</a></li>
-            <li class="active"><a href="{{ url_for('dashboard.land_view') }}"><i class="fas fa-map-marked-alt"></i> Land Management</a></li>
-            <li><a href="{{ url_for('dashboard.crops_view') }}"><i class="fas fa-seedling"></i> Crops</a></li>
-            <li><a href="{{ url_for('dashboard.labour_view') }}"><i class="fas fa-users"></i> Labour Logs</a></li>
-            <li><a href="{{ url_for('dashboard.financials_view') }}"><i class="fas fa-chart-line"></i> Financials</a></li>
-            {% if session.get('user_email') == config['ADMIN_EMAIL'] %}
-            <li><a href="{{ url_for('dashboard.admin_users') }}"><i class="fas fa-user-shield"></i> User Approvals</a></li>
-            {% endif %}
-        </ul>
+<div class="page-wrapper">
+    
+    <!-- Collapsible Sidebar for Desktop -->
+    <aside class="sidebar-wrapper glass-card" style="padding: 1.5rem;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem;">
+            <h2 style="font-size: 0.875rem; font-weight: 700; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.05em;">Menu</h2>
+        </div>
+        <nav style="display: flex; flex-direction: column; gap: 0.5rem;">
+            <a href="{{ url_for('dashboard.dashboard_view') }}" class="sidebar-menu-btn">
+                <div class="sidebar-icon"><i class="fas fa-home"></i></div>
+                <span>Overview</span>
+            </a>
+            <a href="{{ url_for('dashboard.land_view') }}" class="sidebar-menu-btn active">
+                <div class="sidebar-icon"><i class="fas fa-map-marked-alt"></i></div>
+                <span>Land</span>
+            </a>
+            <a href="{{ url_for('dashboard.crops_view') }}" class="sidebar-menu-btn">
+                <div class="sidebar-icon"><i class="fas fa-seedling"></i></div>
+                <span>Crops</span>
+            </a>
+            <a href="{{ url_for('dashboard.labour_view') }}" class="sidebar-menu-btn">
+                <div class="sidebar-icon"><i class="fas fa-users"></i></div>
+                <span>Labour Logs</span>
+            </a>
+            <a href="{{ url_for('dashboard.financials_view') }}" class="sidebar-menu-btn">
+                <div class="sidebar-icon"><i class="fas fa-chart-line"></i></div>
+                <span>Financials</span>
+            </a>
+        </nav>
     </aside>
 
-    <div class="dashboard-content">
-        <header class="content-header land-hero-header" style="background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.8)), url('{{ url_for('static', filename='images/land_header.png') }}');">
-            <h1 class="animate-fade-up">Land Management</h1>
-            <p class="animate-fade-up">Manage your land records and boundaries professionally.</p>
+    <!-- Main Content Area -->
+    <div class="content-wrapper">
+        <!-- Header Image Card -->
+        <header class="header-card group">
+            <img src="{{ url_for('static', filename='images/land_header.png') }}" class="header-img">
+            <div class="header-overlay"></div>
+            <div class="header-content">
+                <span class="tag-pill">Properties</span>
+                <h1 class="header-title">Land Portfolio</h1>
+                <p class="header-subtitle">Manage land records and boundaries professionally.</p>
+            </div>
         </header>
 
         {% with messages = get_flashed_messages() %}
         {% if messages %}
-            <div class="messages">
+            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
                 {% for message in messages %}
-                <div class="flashes alert highlight-msg">{{ message }}</div>
+                <div class="glass" style="padding: 1rem; border-radius: 12px; font-size: 0.875rem; display: flex; align-items: center; gap: 0.75rem; background: rgba(129,199,132,0.2); color: var(--agro-dark);">
+                    <i class="fas fa-info-circle" style="font-size: 1.125rem;"></i> {{ message }}
+                </div>
                 {% endfor %}
             </div>
         {% endif %}
         {% endwith %}
 
-        <div class="form-card">
-            <h3>Add New Land</h3>
-            <form action="{{ url_for('dashboard.land_view') }}" method="POST" class="form-grid">
-                <input type="number" step="0.01" name="area" placeholder="Area (in acres)" required>
-                <input type="text" name="location" placeholder="Location/Village" required>
-                <input type="text" name="soil_type" placeholder="Soil Type (e.g., Black, Red)" required>
-                <button type="submit" class="btn btn-primary">Add Land</button>
-            </form>
-        </div>
-
-        <div class="list-card" style="margin-top: 2rem;">
-            <div class="list-card-header">
-                <h3 style="font-weight: 700;">Your Lands</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem;">
+            <!-- Left Column: Forms -->
+            <div style="display: flex; flex-direction: column; gap: 2rem;">
+                
+                <!-- Add New Land Card -->
+                <div class="glass-card" style="padding: 1.5rem; border-top: 4px solid #f59e0b;">
+                    <h3 style="font-size: 1.125rem; font-weight: 700; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.75rem;">
+                        <div style="width: 40px; height: 40px; border-radius: 12px; background: rgba(245, 158, 11, 0.1); color: #f59e0b; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        Add New Land
+                    </h3>
+                    
+                    <form action="{{ url_for('dashboard.land_view') }}" method="POST" style="display: flex; flex-direction: column; gap: 1rem;">
+                        <input type="number" step="0.01" name="area" placeholder="Area (in acres)" required class="form-input">
+                        <input type="text" name="location" placeholder="Location/Village" required class="form-input">
+                        <input type="text" name="soil_type" placeholder="Soil Type (e.g., Black, Red)" required class="form-input">
+                        
+                        <button type="submit" class="btn btn-secondary" style="width: 100%; padding: 0.75rem; border-color: rgba(245,158,11,0.3); color: #f59e0b; font-weight: 700; margin-top: 0.5rem;">
+                            Add Land Entry
+                        </button>
+                    </form>
+                </div>
             </div>
-            <div class="data-table-wrapper">
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Area (Acres)</th>
-                        <th>Location</th>
-                        <th>Soil Type</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for land in lands %}
-                    <tr>
-                        <td>{{ loop.index }}</td>
-                        <td>{{ land[2] }}</td>
-                        <td>{{ land[3] }}</td>
-                        <td>{{ land[4] }}</td>
-                        <td><a href="{{ url_for('dashboard.land_delete', land_id=land[0]) }}" class="btn btn-secondary btn-sm">Delete</a></td>
-                    </tr>
-                    {% else %}
-                    <tr>
-                        <td colspan="5" style="text-align: center; color: var(--text-muted);">No land records found.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+
+            <!-- Right Column: Tables (Takes remaining width automatically in grid) -->
+            <div style="display: flex; flex-direction: column; gap: 2rem; grid-column: span 2;">
+                
+                <!-- Your Lands Table -->
+                <div class="glass-card" style="padding: 0; overflow: hidden; display: flex; flex-direction: column; height: 100%;">
+                    <div style="padding: 1.25rem; border-bottom: 1px solid var(--border-color); background: rgba(0,0,0,0.02); display: flex; justify-content: space-between; align-items: center;">
+                        <h3 style="font-size: 1.125rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem;"><i class="fas fa-layer-group" style="color: #f59e0b;"></i> Land Records</h3>
+                        <span style="padding: 0.25rem 0.75rem; border-radius: 999px; background: rgba(245, 158, 11, 0.1); color: #f59e0b; font-size: 0.75rem; font-weight: 700; text-transform: uppercase;">{{ lands|length }} Parcels</span>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead style="background: rgba(0,0,0,0.02); text-transform: uppercase;">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Area (Acres)</th>
+                                    <th>Location</th>
+                                    <th>Soil Type</th>
+                                    <th style="text-align: center; width: 64px;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for land in lands %}
+                                <tr style="transition: var(--transition);">
+                                    <td style="color: var(--text-light);">#{{ loop.index }}</td>
+                                    <td style="font-weight: 700; color: var(--agro-dark);">{{ land[2] }} Ac</td>
+                                    <td style="font-weight: 500;">
+                                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                            <i class="fas fa-map-marker-alt" style="color: #f59e0b; opacity: 0.7;"></i>
+                                            {{ land[3] }}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span style="display: inline-flex; align-items: center; padding: 0.125rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 500; background: var(--surface-light); border: 1px solid var(--border-color);">
+                                            {{ land[4] }}
+                                        </span>
+                                    </td>
+                                    <td style="text-align: center;">
+                                        <a href="{{ url_for('dashboard.land_delete', land_id=land[0]) }}" style="display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 8px; color: var(--text-light); transition: var(--transition);" onmouseover="this.style.backgroundColor='rgba(239,68,68,0.1)';this.style.color='#ef4444';" onmouseout="this.style.backgroundColor='transparent';this.style.color='var(--text-light)';" title="Delete">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="5" style="padding: 4rem 1.5rem; text-align: center; color: var(--text-light);">
+                                        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                                            <i class="fas fa-map" style="font-size: 2.25rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                                            <p style="font-size: 1.125rem; font-weight: 500; color: var(--text-color); margin-bottom: 0.25rem;">No land records found</p>
+                                            <p style="font-size: 0.875rem;">Start by adding a land parcel using the form on the left.</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>

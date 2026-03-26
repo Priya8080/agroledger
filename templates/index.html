@@ -1,63 +1,145 @@
 {% extends 'base.html' %}
-{% block title %}AgroLedger - Home{% endblock %}
-{% block body_class %}home-page{% endblock %}
+{% block title %}AgroLedger - Modern Farm Management{% endblock %}
 
 {% block content %}
-<div class="hero-section">
-    <div class="hero-overlay"></div>
-    <div class="hero-content container">
-        <h1 class="hero-title">Empowering Agriculture with <span class="highlight">Precision</span></h1>
-        <p class="hero-subtitle">Your complete, professional agriculture financial management system. Keep track of your land, monitor crop cycles, and analyze profit and loss all in one beautifully designed platform. Register today to take control of your farming business.</p>
-        <div class="hero-btns">
-            <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-lg">Get Started Free</a>
-            <a href="{{ url_for('auth.login') }}" class="btn btn-outline btn-lg">Log In</a>
-        </div>
-    </div>
-</div>
-
-<div class="features-preview container">
-    <div class="feature-card" onclick="toggleFeature('land-desc')" style="cursor: pointer;">
-        <div class="feature-icon"><i class="fas fa-map-marked-alt"></i></div>
-        <h3>Land Management</h3>
-        <p>Digitize your land parcels and track usage precisely.</p>
-        <div id="land-desc" style="display: none; margin-top: 1rem; color: var(--text-muted); font-size: 0.95rem; text-align: left; border-top: 1px solid var(--border-color); padding-top: 1rem; line-height: 1.6;">
-            Farmers can add multiple land parcels, specifying the area, location, and soil type. This helps in keeping a clear record of available resources and planning crop distribution efficiently based on land characteristics.
-        </div>
-        <div class="click-hint" style="margin-top: 0.75rem; font-size: 0.85rem; color: var(--primary-color); font-weight: 600;"><i class="fas fa-chevron-down"></i> Click to learn more</div>
-    </div>
-    <div class="feature-card" onclick="toggleFeature('crop-desc')" style="cursor: pointer;">
-        <div class="feature-icon"><i class="fas fa-seedling"></i></div>
-        <h3>Crop Tracking</h3>
-        <p>Monitor crop performance, yield, and financial turnover.</p>
-        <div id="crop-desc" style="display: none; margin-top: 1rem; color: var(--text-muted); font-size: 0.95rem; text-align: left; border-top: 1px solid var(--border-color); padding-top: 1rem; line-height: 1.6;">
-            Record the crops sown each season, expected yields, and harvest timelines. This enables farmers to maintain a chronological history of their agricultural activities, track workers on logs, and predict future outcomes.
-        </div>
-        <div class="click-hint" style="margin-top: 0.75rem; font-size: 0.85rem; color: var(--primary-color); font-weight: 600;"><i class="fas fa-chevron-down"></i> Click to learn more</div>
-    </div>
-    <div class="feature-card" onclick="toggleFeature('finance-desc')" style="cursor: pointer;">
-        <div class="feature-icon"><i class="fas fa-chart-pie"></i></div>
-        <h3>Profit & Loss</h3>
-        <p>Make data-driven decisions with rich visual analytics.</p>
-        <div id="finance-desc" style="display: none; margin-top: 1rem; color: var(--text-muted); font-size: 0.95rem; text-align: left; border-top: 1px solid var(--border-color); padding-top: 1rem; line-height: 1.6;">
-            Log all expenses (fertilizers, machinery, labour wages) and harvest sales. The system automatically calculates your net profit or loss, presenting it in clear, dynamic charts so you can see exactly how profitable your farming operations are.
-        </div>
-        <div class="click-hint" style="margin-top: 0.75rem; font-size: 0.85rem; color: var(--primary-color); font-weight: 600;"><i class="fas fa-chevron-down"></i> Click to learn more</div>
-    </div>
-</div>
-
-<script>
-function toggleFeature(id) {
-    const el = document.getElementById(id);
-    const hint = el.nextElementSibling;
-    const icon = hint.querySelector('i');
+<!-- Hero Section -->
+<section class="hero">
+    <!-- Abstract nature background geometry -->
+    <div class="hero-bg-shape shape-1"></div>
+    <div class="hero-bg-shape shape-2"></div>
     
-    if(el.style.display === 'none') {
-        el.style.display = 'block';
-        hint.innerHTML = '<i class="fas fa-chevron-up"></i> Show less';
-    } else {
-        el.style.display = 'none';
-        hint.innerHTML = '<i class="fas fa-chevron-down"></i> Click to learn more';
-    }
-}
-</script>
+    <div class="container text-center relative z-10">
+        <div class="badge">
+            ✨ The Complete Agriculture Financial System
+        </div>
+        <h1 class="title-xl">
+            Empowering Agriculture with <span class="text-gradient">Precision</span>
+        </h1>
+        <p class="subtitle">
+            Keep track of your land, monitor crop cycles, protect your yields with smart weather alerts, and analyze profit visually in one beautifully designed platform.
+        </p>
+        <div class="flex justify-center gap-4">
+            <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-lg">
+                <i class="fas fa-leaf"></i> Get Started Free
+            </a>
+            <a href="#about" class="btn btn-secondary btn-lg">
+                Learn More
+            </a>
+        </div>
+        
+        <!-- Hero Dashboard Mockup -->
+        <div class="hero-mockup">
+            <div class="hero-mockup-wrap">
+                <img src="{{ url_for('static', filename='images/dashboard_header.png') }}" alt="AgroLedger Dashboard Preview" class="hero-mockup-img">
+                <div class="mockup-overlay">
+                    <div class="mockup-stats">
+                        <div class="stat-pill">
+                            <div class="icon-box" style="background: rgba(250, 204, 21, 0.2); color: #facc15;">
+                                <i class="fas fa-cloud-sun"></i>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.75rem; opacity: 0.8;">Weather Insight</div>
+                                <div style="font-weight: 700;">Optimal Seeding</div>
+                            </div>
+                        </div>
+                        <div class="stat-pill">
+                            <div class="icon-box" style="background: rgba(74, 222, 128, 0.2); color: #4ade80;">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.75rem; opacity: 0.8;">Profit Margin</div>
+                                <div style="font-weight: 700;">+15.2% Return</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section id="about" class="features-section">
+    <div class="container">
+        <div class="text-center mb-12">
+            <h2 class="title-lg">Why Choose <span class="text-gradient">AgroLedger?</span></h2>
+            <p class="subtitle">
+                Bridging the gap between traditional manual agricultural practices and modern financial technology for absolute precision. 
+            </p>
+        </div>
+
+        <div class="features-grid">
+            <!-- Feature 1 -->
+            <div class="glass-card feature-card" onclick="this.classList.toggle('active')">
+                <div class="feature-shape" style="background-color: var(--agro);"></div>
+                <div class="feature-icon-wrapper">
+                    <i class="fas fa-map-marked-alt"></i>
+                </div>
+                <h3 class="feature-title">Land Management</h3>
+                <p class="feature-desc">
+                    Digitize your land parcels and track usage precisely. Specify area, location, and soil type to meticulously plan crop distribution.
+                </p>
+                <div class="feature-toggle">
+                    Learn more <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="feature-details">
+                    Maintain a clear digital record of all available resources and intelligently plan crop distribution based on specific land characteristics, moisture retention, and sunlight exposure.
+                </div>
+            </div>
+
+            <!-- Feature 2 -->
+            <div class="glass-card feature-card" onclick="this.classList.toggle('active')">
+                <div class="feature-shape" style="background-color: #3b82f6;"></div>
+                <div class="feature-icon-wrapper" style="color: #3b82f6;">
+                    <i class="fas fa-cloud-sun-rain"></i>
+                </div>
+                <h3 class="feature-title">Smart Weather</h3>
+                <p class="feature-desc">
+                    Monitor real-time weather risks and track localized performance. Identify extreme temperatures or heavy rainfall instantly.
+                </p>
+                <div class="feature-toggle" style="color: #3b82f6;">
+                    Learn more <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="feature-details">
+                    Receive real-time alerts when immediate intervention is required to save your produce. Our system overlays local weather data directly onto your active crop cycles.
+                </div>
+            </div>
+
+            <!-- Feature 3 -->
+            <div class="glass-card feature-card" onclick="this.classList.toggle('active')">
+                <div class="feature-shape" style="background-color: #f97316;"></div>
+                <div class="feature-icon-wrapper" style="color: #f97316;">
+                    <i class="fas fa-chart-pie"></i>
+                </div>
+                <h3 class="feature-title">Profit Analytics</h3>
+                <p class="feature-desc">
+                    Make data-driven decisions with rich analytics. Log expenses accurately and automatically calculate your net profit or loss.
+                </p>
+                <div class="feature-toggle" style="color: #f97316;">
+                    Learn more <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="feature-details">
+                    Visually present data through clear, dynamic charts. Drill down into labor costs, fertilizer expenses, and crop sales to see exactly how profitable your operations perform over time.
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="cta-section">
+    <div class="cta-bg"></div>
+    <img src="{{ url_for('static', filename='images/crops_header.png') }}" alt="Beautiful Farm" class="cta-img">
+    
+    <div class="container cta-content">
+        <div class="cta-icon">
+            <i class="fas fa-seedling text-white"></i>
+        </div>
+        <h2 class="title-lg text-white">Ready to digitize your farm?</h2>
+        <p class="subtitle" style="color: rgba(255,255,255,0.9);">Join progressive farmers making data-driven decisions to sustainably increase yield and long-term profitability.</p>
+        <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-lg" style="background: white; color: var(--agro-dark);">
+            Create Free Account <i class="fas fa-arrow-right" style="margin-left: 0.5rem;"></i>
+        </a>
+    </div>
+</section>
 {% endblock %}

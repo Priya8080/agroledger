@@ -1,11 +1,17 @@
 from extensions import mysql
 
-def create_user(name, email, phone, password, is_verified=False):
+def create_user(name, email, phone, password, is_verified=True, otp=None, otp_expiry=None):
     cur = mysql.connection.cursor()
     cur.execute(
-        "INSERT INTO users(name,email,phone,password,is_verified) VALUES(%s,%s,%s,%s,%s)",
-        (name, email, phone, password, is_verified)
+        "INSERT INTO users(name,email,phone,password,is_verified,otp,otp_expiry) VALUES(%s,%s,%s,%s,%s,%s,%s)",
+        (name, email, phone, password, is_verified, otp, otp_expiry)
     )
+    mysql.connection.commit()
+    cur.close()
+
+def update_user_password(user_id, hashed_password):
+    cur = mysql.connection.cursor()
+    cur.execute("UPDATE users SET password=%s WHERE id=%s", (hashed_password, user_id))
     mysql.connection.commit()
     cur.close()
 

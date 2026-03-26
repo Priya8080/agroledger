@@ -198,31 +198,11 @@ def sale_delete(sale_id):
         flash("Sale deleted.")
     return redirect(url_for('dashboard.financials_view'))
 
-# --- ADMIN ROUTES ---
-@dashboard.route('/admin/users')
-def admin_users():
-    user_id = get_current_user_id()
-    if not user_id: return redirect(url_for('auth.login'))
-    
-    if session.get('user_email') != current_app.config['ADMIN_EMAIL']:
-        flash("Unauthorized access.")
-        return redirect(url_for('dashboard.dashboard_view'))
-        
-    unverified_users = get_all_unverified_users()
-    return render_template('admin_users.html', users=unverified_users)
+# --- PROFILE ROUTES ---
+@dashboard.route('/profile')
+def profile_view():
+    if 'user_email' not in session:
+        return redirect(url_for('auth.login'))
+    user = get_user_by_email(session['user_email'])
+    return render_template("profile.html", user=user)
 
-@dashboard.route('/admin/users/approve/<int:target_id>', methods=['POST'])
-def admin_users_approve(target_id):
-    if session.get('user_email') != current_app.config['ADMIN_EMAIL']:
-        return redirect(url_for('dashboard.dashboard_view'))
-    verify_user(target_id)
-    flash("User approved successfully.")
-    return redirect(url_for('dashboard.admin_users'))
-
-@dashboard.route('/admin/users/reject/<int:target_id>', methods=['POST'])
-def admin_users_reject(target_id):
-    if session.get('user_email') != current_app.config['ADMIN_EMAIL']:
-        return redirect(url_for('dashboard.dashboard_view'))
-    delete_user(target_id)
-    flash("User registration rejected and removed.")
-    return redirect(url_for('dashboard.admin_users'))

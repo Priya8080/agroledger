@@ -1,90 +1,132 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}AgroLedger{% endblock %}</title>
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- App Styles -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
-<body class="{% block body_class %}default-page{% endblock %}">
+<body>
 
-    <nav class="global-navbar">
-        <div class="nav-brand">
-            <a href="/">🍃 AgroLedger</a>
-        </div>
-        <div class="nav-controls">
-            <button class="theme-toggle-btn" id="theme-toggle" aria-label="Toggle Dark Mode">
-                <i class="fas fa-moon"></i>
-            </button>
-            <div class="hamburger" id="hamburger">
-                <i class="fas fa-bars"></i>
+    <!-- Sticky Navbar -->
+    <nav class="navbar">
+        <div class="container">
+            <!-- Logo -->
+            <a href="/" class="nav-brand">
+                <i class="fas fa-leaf"></i> AgroLedger
+            </a>
+
+            <!-- Desktop Menu -->
+            <div class="nav-links desktop">
+                <a href="/" class="nav-link">Home</a>
+                {% if session.get('user_email') %}
+                    <a href="{{ url_for('dashboard.dashboard_view') }}" class="nav-link"><i class="fas fa-chart-line"></i> Dashboard</a>
+                    <a href="{{ url_for('dashboard.profile_view') }}" class="nav-link"><i class="fas fa-user-circle"></i> Profile</a>
+                    <a href="{{ url_for('auth.logout') }}" class="btn btn-danger"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                {% else %}
+                    <a href="{{ url_for('auth.login') }}" class="nav-link">Log In</a>
+                    <a href="{{ url_for('auth.register') }}" class="btn btn-primary">Get Started</a>
+                {% endif %}
+                
+                <!-- Theme Toggle -->
+                <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
+                    <i id="theme-toggle-icon" class="fas fa-moon"></i>
+                </button>
             </div>
+
+            <!-- Mobile menu button -->
+            <button id="mobile-menu-btn" class="mobile-menu-btn" aria-label="Menu">
+                <i id="mobile-menu-icon" class="fas fa-bars"></i>
+            </button>
         </div>
-        <div class="nav-links" id="nav-links">
-            <a href="/" class="nav-item">Home</a>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="mobile-menu">
+            <a href="/" class="nav-link">Home</a>
             {% if session.get('user_email') %}
-                <a href="{{ url_for('dashboard.dashboard_view') }}" class="nav-item"><i class="fas fa-chart-line"></i> Dashboard</a>
-                <a href="{{ url_for('auth.logout') }}" class="btn btn-secondary nav-cta"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                <a href="{{ url_for('dashboard.dashboard_view') }}" class="nav-link"><i class="fas fa-chart-line"></i> Dashboard</a>
+                <a href="{{ url_for('dashboard.profile_view') }}" class="nav-link"><i class="fas fa-user-circle"></i> Profile</a>
+                <a href="{{ url_for('auth.logout') }}" class="btn btn-danger"><i class="fas fa-sign-out-alt"></i> Logout</a>
             {% else %}
-                <a href="{{ url_for('auth.login') }}" class="nav-item">Login</a>
-                <a href="{{ url_for('auth.register') }}" class="btn btn-primary nav-cta">Register</a>
+                <a href="{{ url_for('auth.login') }}" class="nav-link">Log In</a>
+                <a href="{{ url_for('auth.register') }}" class="btn btn-primary">Get Started</a>
             {% endif %}
+            
+            <button id="theme-toggle-mobile" class="btn btn-secondary mt-4" style="width: 100%; justify-content: flex-start;">
+                <i id="theme-toggle-icon-mobile" class="fas fa-moon"></i> Theme
+            </button>
         </div>
     </nav>
 
+    <!-- Main Content -->
     <main class="main-content">
         {% block content %}{% endblock %}
     </main>
 
-    <footer class="global-footer">
+    <!-- Footer -->
+    <footer class="footer container">
         <p>&copy; 2026 AgroLedger. Digitizing Agriculture.</p>
     </footer>
 
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Theme Script -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Theme Toggle Logic
-            const themeToggleBtn = document.getElementById('theme-toggle');
-            const icon = themeToggleBtn.querySelector('i');
             const rootHtml = document.documentElement;
+            const themeToggleBtn = document.getElementById('theme-toggle');
+            const themeToggleBtnMobile = document.getElementById('theme-toggle-mobile');
+            const icons = [document.getElementById('theme-toggle-icon'), document.getElementById('theme-toggle-icon-mobile')];
+            
+            const applyDark = () => {
+                rootHtml.classList.add('dark');
+                icons.forEach(i => i && i.classList.replace('fa-moon', 'fa-sun'));
+            };
 
-            // Check localStorage
+            const applyLight = () => {
+                rootHtml.classList.remove('dark');
+                icons.forEach(i => i && i.classList.replace('fa-sun', 'fa-moon'));
+            };
+
             const savedTheme = localStorage.getItem('theme');
             if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                rootHtml.setAttribute('data-theme', 'dark');
-                icon.classList.replace('fa-moon', 'fa-sun');
+                applyDark();
             }
 
-            themeToggleBtn.addEventListener('click', () => {
-                const isDark = rootHtml.getAttribute('data-theme') === 'dark';
+            const toggleTheme = () => {
+                const isDark = rootHtml.classList.contains('dark');
                 if (isDark) {
-                    rootHtml.removeAttribute('data-theme');
+                    applyLight();
                     localStorage.setItem('theme', 'light');
-                    icon.classList.replace('fa-sun', 'fa-moon');
                 } else {
-                    rootHtml.setAttribute('data-theme', 'dark');
+                    applyDark();
                     localStorage.setItem('theme', 'dark');
-                    icon.classList.replace('fa-moon', 'fa-sun');
                 }
-            });
+                
+                // Trigger event for charts if they need to re-render when theme changes
+                window.dispatchEvent(new Event('themeChanged'));
+            };
 
-            // Hamburger Menu
-            const hamburger = document.getElementById('hamburger');
-            const navLinks = document.getElementById('nav-links');
-            if (hamburger) {
-                hamburger.addEventListener('click', () => {
-                    navLinks.classList.toggle('active');
-                    const i = hamburger.querySelector('i');
-                    if (navLinks.classList.contains('active')) {
-                        i.classList.replace('fa-bars', 'fa-times');
+            if (themeToggleBtn) themeToggleBtn.addEventListener('click', toggleTheme);
+            if (themeToggleBtnMobile) themeToggleBtnMobile.addEventListener('click', toggleTheme);
+
+            // Mobile Menu Toggle
+            const mobileBtn = document.getElementById('mobile-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const mobileIcon = document.getElementById('mobile-menu-icon');
+            if (mobileBtn && mobileMenu) {
+                mobileBtn.addEventListener('click', () => {
+                    mobileMenu.classList.toggle('active');
+                    if (mobileMenu.classList.contains('active')) {
+                        mobileIcon.classList.replace('fa-bars', 'fa-times');
                     } else {
-                        i.classList.replace('fa-times', 'fa-bars');
+                        mobileIcon.classList.replace('fa-times', 'fa-bars');
                     }
                 });
             }

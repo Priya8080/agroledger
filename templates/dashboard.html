@@ -1,68 +1,179 @@
 {% extends 'base.html' %}
 {% block title %}AgroLedger - Dashboard{% endblock %}
-{% block body_class %}dashboard-page{% endblock %}
 
 {% block content %}
-<div class="dashboard-layout">
-    <aside class="sidebar">
-        <ul>
-            <li class="active"><a href="{{ url_for('dashboard.dashboard_view') }}"><i class="fas fa-home"></i> Overview</a></li>
-            <li><a href="{{ url_for('dashboard.land_view') }}"><i class="fas fa-map-marked-alt"></i> Land Management</a></li>
-            <li><a href="{{ url_for('dashboard.crops_view') }}"><i class="fas fa-seedling"></i> Crops</a></li>
-            <li><a href="{{ url_for('dashboard.labour_view') }}"><i class="fas fa-users"></i> Labour Logs</a></li>
-            <li><a href="{{ url_for('dashboard.financials_view') }}"><i class="fas fa-chart-line"></i> Financials</a></li>
-            {% if session.get('user_email') == config['ADMIN_EMAIL'] %}
-            <li><a href="{{ url_for('dashboard.admin_users') }}"><i class="fas fa-user-shield"></i> User Approvals</a></li>
-            {% endif %}
-        </ul>
+<div class="page-wrapper">
+    
+    <!-- Collapsible Sidebar for Desktop -->
+    <aside class="sidebar-wrapper glass-card" style="padding: 1.5rem;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem;">
+            <h2 style="font-size: 0.875rem; font-weight: 700; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.05em;">Menu</h2>
+        </div>
+        <nav style="display: flex; flex-direction: column; gap: 0.5rem;">
+            <a href="{{ url_for('dashboard.dashboard_view') }}" class="sidebar-menu-btn active">
+                <div class="sidebar-icon"><i class="fas fa-home"></i></div>
+                <span>Overview</span>
+            </a>
+            <a href="{{ url_for('dashboard.land_view') }}" class="sidebar-menu-btn">
+                <div class="sidebar-icon"><i class="fas fa-map-marked-alt"></i></div>
+                <span>Land</span>
+            </a>
+            <a href="{{ url_for('dashboard.crops_view') }}" class="sidebar-menu-btn">
+                <div class="sidebar-icon"><i class="fas fa-seedling"></i></div>
+                <span>Crops</span>
+            </a>
+            <a href="{{ url_for('dashboard.labour_view') }}" class="sidebar-menu-btn">
+                <div class="sidebar-icon"><i class="fas fa-users"></i></div>
+                <span>Labour Logs</span>
+            </a>
+            <a href="{{ url_for('dashboard.financials_view') }}" class="sidebar-menu-btn">
+                <div class="sidebar-icon"><i class="fas fa-chart-line"></i></div>
+                <span>Financials</span>
+            </a>
+        </nav>
     </aside>
 
-    <div class="dashboard-content">
-        <header class="content-header" style="background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.8)), url('{{ url_for('static', filename='images/dashboard_header.png') }}'); background-size: cover; background-position: center; padding: 4rem 2.5rem; border-radius: 12px; margin-bottom: 2rem; color: white; text-shadow: 2px 2px 6px rgba(0,0,0,0.9);">
-            <h1 class="animate-fade-up" style="color: white; margin-bottom: 0.5rem; font-size: 2.5rem;">Welcome Back!</h1>
-            <p class="animate-fade-up" style="font-size: 1.1rem; opacity: 0.9; animation-delay: 0.1s;">Here is your farming overview.</p>
+    <!-- Main Content Area -->
+    <div class="content-wrapper">
+        <!-- Header Image Card -->
+        <header class="header-card group">
+            <img src="{{ url_for('static', filename='images/dashboard_header.png') }}" class="header-img">
+            <div class="header-overlay"></div>
+            <div class="header-content" style="display: flex; justify-content: space-between; align-items: flex-end;">
+                <div>
+                    <span class="tag-pill">Overview</span>
+                    <h1 class="header-title">Welcome Back</h1>
+                    <p class="header-subtitle">Here is your farming activity at a glance.</p>
+                </div>
+                <div class="glass" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.25rem; color: white;">
+                    <i class="fas fa-calendar-alt" style="opacity: 0.8;"></i>
+                    <span id="currentDate" style="font-weight: 600;"></span>
+                </div>
+            </div>
         </header>
 
         {% with messages = get_flashed_messages() %}
         {% if messages %}
-            <div class="messages">
+            <div>
                 {% for message in messages %}
-                <div class="flashes alert highlight-msg">{{ message }}</div>
+                <div class="glass" style="padding: 1rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 1rem; color: var(--agro-dark); background: rgba(129,199,132,0.2);">
+                    <i class="fas fa-info-circle" style="font-size: 1.25rem;"></i> {{ message }}
+                </div>
                 {% endfor %}
             </div>
         {% endif %}
         {% endwith %}
-        
-        <div class="card-grid">
-            <div class="card stat-card">
-                <div class="card-icon"><i class="fas fa-seedling"></i></div>
-                <div class="card-info">
-                    <h3>Active Crops</h3>
-                    <p class="stat">{{ active_crops_count }}</p>
-                    <small style="color: var(--text-muted); font-size: 0.9rem;">grown on <strong>{{ "%.2f"|format(total_land_area) }}</strong> acres</small>
+
+        <!-- Smart Weather Card -->
+        <div class="glass-card" id="weatherWidget" style="display: none;">
+            <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1.5rem;">
+                <div style="display: flex; align-items: center; gap: 1.5rem;">
+                    <div id="weatherMainIcon" style="width: 64px; height: 64px; border-radius: 16px; background: linear-gradient(135deg, #fde047, #fb923c); display: flex; align-items: center; justify-content: center; font-size: 2rem; color: white; box-shadow: var(--shadow-md);">
+                        <i class="fas fa-sun"></i>
+                    </div>
+                    <div>
+                        <p id="weatherLocation" style="font-size: 0.875rem; font-weight: 700; color: var(--text-light); text-transform: uppercase; letter-spacing: 1px;">Detecting...</p>
+                        <h3 id="weatherTemp" style="font-size: 2.5rem; font-weight: 700; line-height: 1;">--°C</h3>
+                    </div>
+                </div>
+                
+                <div style="display: flex; gap: 2rem;">
+                    <div style="text-align: center;">
+                        <div style="width: 40px; height: 40px; border-radius: 50%; background: rgba(59, 130, 246, 0.1); color: #3b82f6; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.5rem;">
+                            <i class="fas fa-cloud-rain"></i>
+                        </div>
+                        <p style="font-size: 0.75rem; color: var(--text-light); font-weight: 500;">Rainfall</p>
+                        <p id="weatherRain" style="font-weight: 700;">-- mm</p>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="width: 40px; height: 40px; border-radius: 50%; background: rgba(6, 182, 212, 0.1); color: #06b6d4; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.5rem;">
+                            <i class="fas fa-tint"></i>
+                        </div>
+                        <p style="font-size: 0.75rem; color: var(--text-light); font-weight: 500;">Humidity</p>
+                        <p id="weatherHum" style="font-weight: 700;">--%</p>
+                    </div>
+                </div>
+
+                <div id="weatherAlertBox" style="flex: 1; min-width: 250px;">
+                    <div style="padding: 1rem 1.25rem; border-radius: 12px; background: var(--surface-light); border: 1px solid var(--border-color); display: flex; align-items: flex-start; gap: 1rem; transition: var(--transition);" id="weatherAlertBg">
+                        <i id="weatherAlertIcon" class="fas fa-spinner fa-spin" style="font-size: 1.25rem; color: var(--text-light); margin-top: 0.25rem;"></i>
+                        <div>
+                            <p style="font-size: 0.875rem; font-weight: 700; margin-bottom: 0.25rem;">Status</p>
+                            <span id="weatherAlertText" style="font-size: 0.75rem; color: var(--text-light);">Analyzing weather data...</span>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="card stat-card">
-                <div class="card-icon"><i class="fas fa-users"></i></div>
-                <div class="card-info">
-                    <h3>Labour Logs</h3>
-                    <p class="stat">{{ labour_count }}</p>
-                </div>
-            </div>
-            <div class="card stat-card">
-                <div class="card-icon" style="color: {{ 'var(--success-color)' if net_profit >= 0 else 'var(--danger-color)' }}; background: {{ 'rgba(16,185,129,0.1)' if net_profit >= 0 else 'rgba(239,68,68,0.1)' }};"><i class="fas fa-wallet"></i></div>
-                <div class="card-info">
-                    <h3>Net Profit</h3>
-                    <p class="stat" style="color: {{ 'var(--success-color)' if net_profit >= 0 else 'var(--danger-color)' }};">₹{{ "%.2f"|format(net_profit) }}</p>
+
+            <!-- 5-Day Forecast -->
+            <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border-color);">
+                <h4 style="font-size: 0.875rem; font-weight: 700; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1rem;">Upcoming Forecast</h4>
+                <div id="forecastContainer" style="display: flex; gap: 1rem; overflow-x: auto; padding-bottom: 0.5rem; scrollbar-width: thin; scrollbar-color: var(--border-color) transparent;">
+                    <!-- JS will populate this -->
                 </div>
             </div>
         </div>
 
-        <!-- Profit and Loss Chart Area -->
-        <div class="form-card chart-container" style="margin-top: 2rem;">
-            <h3 style="margin-bottom: 1.5rem; font-weight: 600;">Overall Financial Visualization</h3>
-            <div style="position: relative; height: 300px; width: 100%;">
-                <canvas id="profitChart"></canvas>
+        <!-- Summary Statistics -->
+        <div class="stats-grid">
+            <!-- Active Crops -->
+            <div class="glass-card stat-card" style="box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+                <div class="stat-icon" style="background: linear-gradient(135deg, #4ade80, #16a34a); color: white; width: 56px; height: 56px;">
+                    <i class="fas fa-seedling"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 class="stat-label">Active Crops</h3>
+                    <div class="stat-value">{{ active_crops_count }}</div>
+                    <p style="font-size: 0.75rem; color: var(--text-light);">on <strong>{{ "%.2f"|format(total_land_area) }}</strong> acres</p>
+                </div>
+            </div>
+
+            <!-- Total Investment -->
+            <div class="glass-card stat-card" style="box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+                <div class="stat-icon" style="background: linear-gradient(135deg, #60a5fa, #2563eb); color: white; width: 56px; height: 56px;">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 class="stat-label">Total Investment</h3>
+                    <div class="stat-value">₹{{ "%.2f"|format(total_expenses | default(0)) }}</div>
+                    <p style="font-size: 0.75rem; color: var(--text-light);">{{ labour_count }} Labour Logs</p>
+                </div>
+            </div>
+
+            <!-- Net Profit -->
+            <div class="glass-card stat-card" style="position: relative; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+                <div style="position: absolute; right: 0; bottom: 0; width: 100px; height: 100px; background: {{ 'rgba(34, 197, 94, 0.1)' if net_profit >= 0 else 'rgba(239, 68, 68, 0.1)' }}; border-top-left-radius: 100%; z-index: 0;"></div>
+                <div class="stat-icon" style="background: linear-gradient(135deg, {{ '#34d399, #059669' if net_profit >= 0 else '#f87171, #dc2626' }}); color: white; width: 56px; height: 56px; position: relative; z-index: 1;">
+                    <i class="fas fa-wallet"></i>
+                </div>
+                <div class="stat-info" style="position: relative; z-index: 1;">
+                    <h3 class="stat-label">Net Profit</h3>
+                    <div class="stat-value" style="color: {{ '#16a34a' if net_profit >= 0 else '#dc2626' }};">₹{{ "%.2f"|format(net_profit) }}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Grid -->
+        <div class="dashboard-grid pb-8" style="grid-template-columns: 1fr 1fr;">
+            <!-- Profit Donut Chart -->
+            <div class="glass-card" style="display: flex; flex-direction: column;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <h3 style="font-size: 1.125rem; font-weight: 700;">Financial Summary</h3>
+                    <button style="color: var(--text-light);"><i class="fas fa-ellipsis-h"></i></button>
+                </div>
+                <div style="position: relative; flex: 1; min-height: 300px; display: flex; align-items: center; justify-content: center; width: 100%;">
+                    <canvas id="profitChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Weather Crop Suitability Chart -->
+            <div class="glass-card" style="display: flex; flex-direction: column;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <h3 style="font-size: 1.125rem; font-weight: 700;">Crop Suitability Status</h3>
+                </div>
+                <div style="position: relative; flex: 1; min-height: 300px; width: 100%;">
+                    <canvas id="weatherCropChart"></canvas>
+                </div>
             </div>
         </div>
     </div>
@@ -70,20 +181,28 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Current date formatting
+        const dateOptions = { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' };
+        document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-US', dateOptions);
+
         var ctx = document.getElementById('profitChart').getContext('2d');
-        var totalSales = {{ total_sales | default(0) }};
-        var totalExpenses = {{ total_expenses | default(0) }};
+        var totalSales = parseFloat("{{ total_sales | default(0) }}") || 0;
+        var totalExpenses = parseFloat("{{ total_expenses | default(0) }}") || 0;
         
         if(totalSales === 0 && totalExpenses === 0) {
-            totalSales = 0.01;
+            totalSales = 0.01; // Avoid completely empty chart
         }
 
-        // Get computed variables
-        const rootStyles = getComputedStyle(document.documentElement);
-        const successColor = rootStyles.getPropertyValue('--success-color').trim() || '#10b981';
-        const dangerColor = rootStyles.getPropertyValue('--danger-color').trim() || '#ef4444';
-        const cardBg = rootStyles.getPropertyValue('--card-bg').trim() || '#ffffff';
-        const textMuted = rootStyles.getPropertyValue('--text-muted').trim() || '#64748b';
+        function getChartColors() {
+            const isDark = document.documentElement.classList.contains('dark');
+            return {
+                text: isDark ? '#9ca3af' : '#4b5563', // gray-400 : gray-600
+                border: isDark ? '#1e1e1e' : '#ffffff',
+                grid: isDark ? '#374151' : '#e5e7eb' // gray-700 : gray-200
+            };
+        }
+
+        let colors = getChartColors();
 
         var profitChart = new Chart(ctx, {
             type: 'doughnut',
@@ -91,31 +210,40 @@
                 labels: ['Earnings (Sales)', 'Expenses'],
                 datasets: [{
                     data: [totalSales, totalExpenses],
-                    backgroundColor: [successColor, dangerColor],
-                    hoverBackgroundColor: [successColor, dangerColor],
-                    borderWidth: 2,
-                    borderColor: cardBg
+                    backgroundColor: ['#10b981', '#ef4444'], // emerald-500, red-500
+                    hoverBackgroundColor: ['#34d399', '#f87171'],
+                    borderWidth: 4,
+                    borderColor: colors.border
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                cutout: '65%',
+                cutout: '75%',
+                layout: { padding: 10 },
                 plugins: {
                     legend: {
                         position: 'bottom',
                         labels: {
-                            font: { family: "'Inter', sans-serif", size: 14 },
-                            color: textMuted
+                            font: { family: "'Outfit', sans-serif", size: 13, weight: '500' },
+                            color: colors.text,
+                            padding: 20,
+                            usePointStyle: true,
+                            pointStyle: 'circle'
                         }
                     },
                     tooltip: {
+                        backgroundColor: 'rgba(0,0,0,0.8)',
+                        titleFont: { family: "'Outfit', sans-serif", size: 13 },
+                        bodyFont: { family: "'Outfit', sans-serif", size: 14, weight: 'bold' },
+                        padding: 12,
+                        cornerRadius: 8,
                         callbacks: {
                             label: function(context) {
                                 let label = context.label || '';
                                 if (label) { label += ': '; }
                                 if (context.parsed !== null) {
-                                    label += '₹' + context.parsed;
+                                    label += '₹' + context.parsed.toLocaleString('en-IN');
                                 }
                                 return label;
                             }
@@ -124,19 +252,240 @@
                 }
             }
         });
-        
-        // Update chart colors when theme toggles
-        const observer = new MutationObserver((mutations) => {
-            mutations.forEach((mutation) => {
-                if(mutation.attributeName === 'data-theme') {
-                    const newRootStyles = getComputedStyle(document.documentElement);
-                    profitChart.data.datasets[0].borderColor = newRootStyles.getPropertyValue('--card-bg').trim() || '#ffffff';
-                    profitChart.options.plugins.legend.labels.color = newRootStyles.getPropertyValue('--text-muted').trim() || '#64748b';
-                    profitChart.update();
+
+        // Weather Widget Logic
+        function loadWeather() {
+            const locEl = document.getElementById('weatherLocation');
+            const tempEl = document.getElementById('weatherTemp');
+            const rainEl = document.getElementById('weatherRain');
+            const humEl = document.getElementById('weatherHum');
+            const alertBox = document.getElementById('weatherAlertBox');
+            const alertText = document.getElementById('weatherAlertText');
+            const alertIcon = document.getElementById('weatherAlertIcon');
+            const weatherMainIcon = document.getElementById('weatherMainIcon');
+            const wWidget = document.getElementById('weatherWidget');
+            
+            wWidget.style.display = 'block';
+
+            let lat = 28.6139;
+            let lon = 77.2090;
+
+            function fetchOpenMeteo(latitude, longitude, cityName) {
+                const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,precipitation&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,weathercode&timezone=auto&past_days=1&forecast_days=6`;
+                fetch(url)
+                    .then(res => res.json())
+                    .then(data => {
+                        const current = data.current;
+                        const temp = current.temperature_2m;
+                        const hum = current.relative_humidity_2m;
+                        const rain = current.precipitation;
+
+                        locEl.textContent = cityName;
+                        tempEl.textContent = temp + '°C';
+                        humEl.textContent = hum + '%';
+                        rainEl.textContent = rain + ' mm';
+
+                        alertIcon.className = 'fas text-xl'; 
+                        const alertBg = document.getElementById('weatherAlertBg');
+
+                        if (rain > 10) {
+                            alertIcon.classList.add('fa-cloud-showers-heavy');
+                            alertIcon.style.color = '#ef4444';
+                            alertText.textContent = 'High rainfall expected – avoid harvesting and risk of crop damage';
+                            alertBg.style.background = 'rgba(239, 68, 68, 0.1)';
+                            alertBg.style.borderColor = 'rgba(239, 68, 68, 0.3)';
+                            weatherMainIcon.innerHTML = '<i class="fas fa-cloud-showers-heavy"></i>';
+                            weatherMainIcon.style.background = 'linear-gradient(135deg, #6b7280, #374151)';
+                        } else if (temp > 35) {
+                            alertIcon.classList.add('fa-temperature-high');
+                            alertIcon.style.color = '#f97316';
+                            alertText.textContent = 'High temperature – immediate irrigation needed';
+                            alertBg.style.background = 'rgba(249, 115, 22, 0.1)';
+                            alertBg.style.borderColor = 'rgba(249, 115, 22, 0.3)';
+                        } else if (hum > 80) {
+                            alertIcon.classList.add('fa-tint');
+                            alertIcon.style.color = '#3b82f6';
+                            alertText.textContent = 'High humidity – disease risk detected on sensitive crops';
+                            alertBg.style.background = 'rgba(59, 130, 246, 0.1)';
+                            alertBg.style.borderColor = 'rgba(59, 130, 246, 0.3)';
+                            weatherMainIcon.innerHTML = '<i class="fas fa-cloud"></i>';
+                            weatherMainIcon.style.background = 'linear-gradient(135deg, #93c5fd, #9ca3af)';
+                        } else {
+                            alertIcon.classList.add('fa-sun');
+                            alertIcon.style.color = '#10b981';
+                            alertText.textContent = 'Favorable weather – excellent conditions for crop growth';
+                            alertBg.style.background = 'rgba(16, 185, 129, 0.1)';
+                            alertBg.style.borderColor = 'rgba(16, 185, 129, 0.3)';
+                        }
+
+                        // Populate Past & Upcoming Forecast
+                        const forecastContainer = document.getElementById('forecastContainer');
+                        if (forecastContainer && data.daily) {
+                            forecastContainer.innerHTML = '';
+                            
+                            // Index 0: Yesterday, 1: Today, 2-6: Future
+                            for (let i = 0; i < data.daily.time.length; i++) {
+                                if (i === 1) continue; // Skip today, shown in the main weather box
+
+                                const dateStr = data.daily.time[i];
+                                const dateObj = new Date(dateStr);
+                                
+                                let dayName = '';
+                                if (i === 0) dayName = 'Yesterday';
+                                else if (i === 2) dayName = 'Tomorrow';
+                                else dayName = dateObj.toLocaleDateString('en-US', { weekday: 'short' });
+
+                                const maxT = Math.round(data.daily.temperature_2m_max[i]);
+                                const minT = Math.round(data.daily.temperature_2m_min[i]);
+                                const rainForecast = data.daily.precipitation_sum[i];
+                                const wCode = data.daily.weathercode[i];
+                                
+                                let iconClass = 'fa-sun';
+                                let iconColor = '#facc15';
+                                if (wCode >= 1 && wCode <= 3) { iconClass = 'fa-cloud-sun'; iconColor = '#9ca3af'; }
+                                if (wCode >= 45 && wCode <= 48) { iconClass = 'fa-smog'; iconColor = '#94a3b8'; }
+                                if (wCode >= 51 && wCode <= 67) { iconClass = 'fa-cloud-rain'; iconColor = '#60a5fa'; }
+                                if (wCode >= 71 && wCode <= 77) { iconClass = 'fa-snowflake'; iconColor = '#93c5fd'; }
+                                if (wCode >= 95) { iconClass = 'fa-bolt'; iconColor = '#c084fc'; }
+                                
+                                const styling = i === 0 ? 'opacity: 0.85; border-style: dashed; background: rgba(0,0,0,0.01);' : 'background: rgba(0,0,0,0.02); border-style: solid;';
+                                
+                                forecastContainer.innerHTML += `
+                                    <div style="flex: 1; min-width: 90px; text-align: center; padding: 1rem 0.5rem; border-radius: 12px; border-width: 1px; border-color: var(--border-color); ${styling}">
+                                        <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-light); margin-bottom: 0.5rem; text-transform: uppercase;">${dayName}</div>
+                                        <i class="fas ${iconClass}" style="font-size: 1.5rem; color: ${iconColor}; margin-bottom: 0.5rem;"></i>
+                                        <div style="font-size: 0.875rem; font-weight: 700; color: var(--text-color);">${maxT}° <span style="color: var(--text-light); font-weight: 500;">${minT}°</span></div>
+                                        <div style="font-size: 0.7rem; color: #3b82f6; margin-top: 0.25rem;">${rainForecast > 0 ? rainForecast + 'mm' : '0mm'}</div>
+                                    </div>
+                                `;
+                            }
+                        }
+
+                        renderWeatherChart(temp, hum, rain, colors);
+                    })
+                    .catch(err => {
+                        locEl.textContent = 'Unknown';
+                        alertText.textContent = 'Failed to load weather data.';
+                        alertIcon.className = 'fas fa-exclamation-triangle text-red-500';
+                    });
+            }
+
+            function getCityNameAndWeather(latArg, lonArg, defaultName) {
+                fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latArg}&longitude=${lonArg}&localityLanguage=en`)
+                    .then(res => res.json())
+                    .then(data => {
+                        let locationName = data.city || data.locality || data.principalSubdivision || defaultName;
+                        fetchOpenMeteo(latArg, lonArg, locationName);
+                    })
+                    .catch(err => {
+                        fetchOpenMeteo(latArg, lonArg, defaultName);
+                    });
+            }
+
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        getCityNameAndWeather(position.coords.latitude, position.coords.longitude, 'Local Farm');
+                    },
+                    () => {
+                        fetchOpenMeteo(lat, lon, 'Delhi (Default)');
+                    }
+                );
+            } else {
+                fetchOpenMeteo(lat, lon, 'Delhi (Default)');
+            }
+        }
+        loadWeather();
+
+        function renderWeatherChart(temp, hum, rain, currentColors) {
+            const ctxWeather = document.getElementById('weatherCropChart');
+            if(!ctxWeather) return;
+
+            const wheatScore = Math.max(10, 100 - Math.abs(20 - temp)*2 - (hum > 60 ? 20 : 0));
+            const riceScore = Math.max(10, temp > 25 && rain > 5 ? 90 : 40);
+            const maizeScore = Math.max(10, 80 - Math.abs(25 - temp)*1.5);
+            const cottonScore = Math.max(10, temp > 28 && rain < 2 ? 85 : 30);
+
+            if (window.myWeatherChart instanceof Chart) {
+                window.myWeatherChart.destroy();
+            }
+
+            // Create a gradient pattern
+            let gradient = ctxWeather.getContext('2d').createLinearGradient(0, 0, 0, 400);
+            gradient.addColorStop(0, '#81c784'); // agro
+            gradient.addColorStop(1, '#2e7d32'); // agro-dark
+
+            window.myWeatherChart = new Chart(ctxWeather.getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: ['Wheat', 'Rice', 'Maize', 'Cotton'],
+                    datasets: [{
+                        label: 'Suitability Score',
+                        data: [wheatScore, riceScore, maizeScore, cottonScore],
+                        backgroundColor: gradient,
+                        borderRadius: 6,
+                        borderSkipped: false,
+                        barThickness: 'flex',
+                        maxBarThickness: 40
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { 
+                            beginAtZero: true, 
+                            max: 100, 
+                            grid: { color: currentColors.grid, drawBorder: false },
+                            ticks: { 
+                                color: currentColors.text,
+                                font: { family: "'Outfit', sans-serif" },
+                                callback: function(value) { return value + '%' }
+                            },
+                            border: { dash: [4, 4] }
+                        },
+                        x: { 
+                            grid: { display: false, drawBorder: false },
+                            ticks: { 
+                                color: currentColors.text,
+                                font: { family: "'Outfit', sans-serif", weight: '500' }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: 'rgba(0,0,0,0.8)',
+                            titleFont: { family: "'Outfit', sans-serif", size: 13 },
+                            bodyFont: { family: "'Outfit', sans-serif", size: 14, weight: 'bold' },
+                            padding: 12,
+                            cornerRadius: 8,
+                            callbacks: {
+                                label: function(context) { return context.parsed.y + '% Compatible'; }
+                            }
+                        }
+                    }
                 }
             });
+        }
+        
+        // Theme Toggle Listener to update charts
+        window.addEventListener('themeChanged', () => {
+            const newColors = getChartColors();
+            
+            // Update Profit Chart
+            profitChart.data.datasets[0].borderColor = newColors.border;
+            profitChart.options.plugins.legend.labels.color = newColors.text;
+            profitChart.update();
+            
+            // Update Weather Chart
+            if(window.myWeatherChart) {
+                window.myWeatherChart.options.scales.x.ticks.color = newColors.text;
+                window.myWeatherChart.options.scales.y.ticks.color = newColors.text;
+                window.myWeatherChart.options.scales.y.grid.color = newColors.grid;
+                window.myWeatherChart.update();
+            }
         });
-        observer.observe(document.documentElement, { attributes: true });
     });
 </script>
 {% endblock %}
