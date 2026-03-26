@@ -4,4 +4,5 @@ Werkzeug==3.0.1
 python-dotenv==1.0.0
 Flask-Mail==0.9.1
 cryptography
-gunicorn==20.1.0
+gunicorn==23.0.0
+setuptools
