@@ -33,9 +33,9 @@ def dashboard_view():
     
     total_expenses = sum(exp[3] for exp in expenses) if expenses else 0
     total_sales = sum((sale[3] * sale[4]) for sale in sales) if sales else 0
-    
     net_profit = total_sales - total_expenses
-    import json
+    net_profit = total_sales - total_expenses
+    
     crop_data = []
     for c in crops:
         try:
@@ -49,7 +49,6 @@ def dashboard_view():
             })
         except Exception:
             pass
-    crop_data_json = json.dumps(crop_data)
     
     return render_template(
         "dashboard.html", 
@@ -59,7 +58,7 @@ def dashboard_view():
         total_sales=total_sales,
         total_expenses=total_expenses,
         total_land_area=total_land_area,
-        crop_data_json=crop_data_json
+        crop_data=crop_data
     )
 
 # --- LAND ROUTES ---

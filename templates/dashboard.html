@@ -362,7 +362,7 @@
                         }
 
         // Parse crop data from Python template context
-        const cropDataJson = {{ crop_data_json | safe | default('[]') }};
+        const cropDataJson = {{ crop_data | tojson | safe | default('[]') }};
 
         function renderCropProductionChart(currentColors) {
             const ctxCrop = document.getElementById('weatherCropChart');
