@@ -35,6 +35,21 @@ def dashboard_view():
     total_sales = sum((sale[3] * sale[4]) for sale in sales) if sales else 0
     
     net_profit = total_sales - total_expenses
+    import json
+    crop_data = []
+    for c in crops:
+        try:
+            # c[2]=crop_name, c[4]=sown_date, c[5]=expected_yield
+            c_year = c[4].year if c[4] else 'Unknown'
+            c_yield = float(c[5]) if c[5] is not None else 0.0
+            crop_data.append({
+                'name': c[2],
+                'year': c_year,
+                'yield': c_yield
+            })
+        except Exception:
+            pass
+    crop_data_json = json.dumps(crop_data)
     
     return render_template(
         "dashboard.html", 
@@ -43,7 +58,8 @@ def dashboard_view():
         net_profit=net_profit,
         total_sales=total_sales,
         total_expenses=total_expenses,
-        total_land_area=total_land_area
+        total_land_area=total_land_area,
+        crop_data_json=crop_data_json
     )
 
 # --- LAND ROUTES ---

@@ -361,73 +361,71 @@
                             }
                         }
 
-                        renderWeatherChart(temp, hum, rain, colors);
-                    })
-                    .catch(err => {
-                        locEl.textContent = 'Unknown';
-                        alertText.textContent = 'Failed to load weather data.';
-                        alertIcon.className = 'fas fa-exclamation-triangle text-red-500';
+        // Parse crop data from Python template context
+        const cropDataJson = {{ crop_data_json | safe | default('[]') }};
+
+        function renderCropProductionChart(currentColors) {
+            const ctxCrop = document.getElementById('weatherCropChart');
+            if(!ctxCrop) return;
+
+            // Group data by Year -> Crop -> Yield
+            // cropDataJson = [{name: 'Wheat', year: 2023, yield: 50.5}, ...]
+            const yearsSet = new Set();
+            const cropsSet = new Set();
+            cropDataJson.forEach(c => {
+                if (c.year !== 'Unknown') yearsSet.add(c.year);
+                cropsSet.add(c.name);
+            });
+
+            // Sort years
+            const labels = Array.from(yearsSet).sort();
+            
+            // Generate datasets
+            const colorsList = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444', '#14b8a6'];
+            const datasets = [];
+            
+            let colorIdx = 0;
+            cropsSet.forEach(cropName => {
+                const data = labels.map(year => {
+                    // Sum yield for this crop in this year
+                    return cropDataJson
+                        .filter(c => c.name === cropName && c.year === year)
+                        .reduce((sum, c) => sum + c.yield, 0);
+                });
+                
+                // Only add dataset if there's >0 data
+                if (data.some(v => v > 0)) {
+                    datasets.push({
+                        label: cropName,
+                        data: data,
+                        backgroundColor: colorsList[colorIdx % colorsList.length],
+                        borderRadius: 4,
+                        barThickness: 'flex',
+                        maxBarThickness: 30
                     });
-            }
-
-            function getCityNameAndWeather(latArg, lonArg, defaultName) {
-                fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latArg}&longitude=${lonArg}&localityLanguage=en`)
-                    .then(res => res.json())
-                    .then(data => {
-                        let locationName = data.city || data.locality || data.principalSubdivision || defaultName;
-                        fetchOpenMeteo(latArg, lonArg, locationName);
-                    })
-                    .catch(err => {
-                        fetchOpenMeteo(latArg, lonArg, defaultName);
-                    });
-            }
-
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    (position) => {
-                        getCityNameAndWeather(position.coords.latitude, position.coords.longitude, 'Local Farm');
-                    },
-                    () => {
-                        fetchOpenMeteo(lat, lon, 'Delhi (Default)');
-                    }
-                );
-            } else {
-                fetchOpenMeteo(lat, lon, 'Delhi (Default)');
-            }
-        }
-        loadWeather();
-
-        function renderWeatherChart(temp, hum, rain, currentColors) {
-            const ctxWeather = document.getElementById('weatherCropChart');
-            if(!ctxWeather) return;
-
-            const wheatScore = Math.max(10, 100 - Math.abs(20 - temp)*2 - (hum > 60 ? 20 : 0));
-            const riceScore = Math.max(10, temp > 25 && rain > 5 ? 90 : 40);
-            const maizeScore = Math.max(10, 80 - Math.abs(25 - temp)*1.5);
-            const cottonScore = Math.max(10, temp > 28 && rain < 2 ? 85 : 30);
+                    colorIdx++;
+                }
+            });
 
             if (window.myWeatherChart instanceof Chart) {
                 window.myWeatherChart.destroy();
             }
 
-            // Create a gradient pattern
-            let gradient = ctxWeather.getContext('2d').createLinearGradient(0, 0, 0, 400);
-            gradient.addColorStop(0, '#81c784'); // agro
-            gradient.addColorStop(1, '#2e7d32'); // agro-dark
+            // Fallback if no data
+            if (datasets.length === 0) {
+                labels.push('No Data');
+                datasets.push({
+                    label: 'Yield',
+                    data: [0],
+                    backgroundColor: '#9ca3af'
+                });
+            }
 
-            window.myWeatherChart = new Chart(ctxWeather.getContext('2d'), {
+            window.myWeatherChart = new Chart(ctxCrop.getContext('2d'), {
                 type: 'bar',
                 data: {
-                    labels: ['Wheat', 'Rice', 'Maize', 'Cotton'],
-                    datasets: [{
-                        label: 'Suitability Score',
-                        data: [wheatScore, riceScore, maizeScore, cottonScore],
-                        backgroundColor: gradient,
-                        borderRadius: 6,
-                        borderSkipped: false,
-                        barThickness: 'flex',
-                        maxBarThickness: 40
-                    }]
+                    labels: labels.length ? labels : ['No Data'],
+                    datasets: datasets
                 },
                 options: {
                     responsive: true,
@@ -435,39 +433,58 @@
                     scales: {
                         y: { 
                             beginAtZero: true, 
-                            max: 100, 
                             grid: { color: currentColors.grid, drawBorder: false },
                             ticks: { 
                                 color: currentColors.text,
-                                font: { family: "'Outfit', sans-serif" },
-                                callback: function(value) { return value + '%' }
+                                font: { family: "'Outfit', sans-serif" }
                             },
-                            border: { dash: [4, 4] }
+                            border: { dash: [4, 4] },
+                            title: {
+                                display: true,
+                                text: 'Expected Yield (Quintals)',
+                                color: currentColors.text,
+                                font: { family: "'Outfit', sans-serif" }
+                            }
                         },
                         x: { 
                             grid: { display: false, drawBorder: false },
                             ticks: { 
                                 color: currentColors.text,
                                 font: { family: "'Outfit', sans-serif", weight: '500' }
+                            },
+                            title: {
+                                display: true,
+                                text: 'Year',
+                                color: currentColors.text,
+                                font: { family: "'Outfit', sans-serif", weight: '600' }
                             }
                         }
                     },
                     plugins: {
-                        legend: { display: false },
+                        legend: { 
+                            display: true,
+                            position: 'top',
+                            labels: {
+                                color: currentColors.text,
+                                font: { family: "'Outfit', sans-serif", size: 12 },
+                                usePointStyle: true,
+                                pointStyle: 'circle'
+                            }
+                        },
                         tooltip: {
                             backgroundColor: 'rgba(0,0,0,0.8)',
                             titleFont: { family: "'Outfit', sans-serif", size: 13 },
                             bodyFont: { family: "'Outfit', sans-serif", size: 14, weight: 'bold' },
                             padding: 12,
-                            cornerRadius: 8,
-                            callbacks: {
-                                label: function(context) { return context.parsed.y + '% Compatible'; }
-                            }
+                            cornerRadius: 8
                         }
                     }
                 }
             });
         }
+        
+        // Render it initially
+        renderCropProductionChart(colors);
         
         // Theme Toggle Listener to update charts
         window.addEventListener('themeChanged', () => {
