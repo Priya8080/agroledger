@@ -112,6 +112,18 @@
                     <!-- JS will populate this -->
                 </div>
             </div>
+
+            <!-- Sowing Recommendation -->
+            <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border-color);">
+                <h4 style="font-size: 0.875rem; font-weight: 700; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1rem;">Sowing Suitability</h4>
+                <div id="cropRecommendationBox" style="padding: 1rem 1.25rem; border-radius: 12px; background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); display: flex; flex-direction: column; gap: 0.5rem;">
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <i id="sowingIcon" class="fas fa-seedling" style="color: #3b82f6; font-size: 1.25rem;"></i>
+                        <span id="sowingStatusText" style="font-weight: 700; font-size: 1rem; color: var(--text-color);">Analyzing season conditions...</span>
+                    </div>
+                    <p id="recommendedCropsText" style="font-size: 0.875rem; color: var(--text-light); margin-left: 2rem;">...</p>
+                </div>
+            </div>
         </div>
 
         <!-- Summary Statistics -->
@@ -169,7 +181,7 @@
             <!-- Weather Crop Suitability Chart -->
             <div class="glass-card" style="display: flex; flex-direction: column;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                    <h3 style="font-size: 1.125rem; font-weight: 700;">Crop Suitability Status</h3>
+                    <h3 style="font-size: 1.125rem; font-weight: 700;">Crop Production Overview</h3>
                 </div>
                 <div style="position: relative; flex: 1; min-height: 300px; width: 100%;">
                     <canvas id="weatherCropChart"></canvas>
@@ -253,7 +265,7 @@
             }
         });
 
-        // Weather Widget Logic
+        // Weather Widget & Sowing UI Logic
         function loadWeather() {
             const locEl = document.getElementById('weatherLocation');
             const tempEl = document.getElementById('weatherTemp');
@@ -265,8 +277,15 @@
             const weatherMainIcon = document.getElementById('weatherMainIcon');
             const wWidget = document.getElementById('weatherWidget');
             
+            // Sowing recommendation elements
+            const sowingStatusText = document.getElementById('sowingStatusText');
+            const recommendedCropsText = document.getElementById('recommendedCropsText');
+            const cropRecommendationBox = document.getElementById('cropRecommendationBox');
+            const sowingIcon = document.getElementById('sowingIcon');
+            
             wWidget.style.display = 'block';
 
+            // Coordinates for New Delhi (can be replaced by geo API if needed)
             let lat = 28.6139;
             let lon = 77.2090;
 
@@ -288,6 +307,7 @@
                         alertIcon.className = 'fas text-xl'; 
                         const alertBg = document.getElementById('weatherAlertBg');
 
+                        // Weather Alert Logic
                         if (rain > 10) {
                             alertIcon.classList.add('fa-cloud-showers-heavy');
                             alertIcon.style.color = '#ef4444';
@@ -317,6 +337,56 @@
                             alertBg.style.background = 'rgba(16, 185, 129, 0.1)';
                             alertBg.style.borderColor = 'rgba(16, 185, 129, 0.3)';
                         }
+
+                        // Sowing Recommendation Logic
+                        const month = new Date().getMonth() + 1; // 1-12
+                        let season = '';
+                        let recommendations = '';
+                        
+                        if (month >= 6 && month <= 7) {
+                            season = 'Kharif';
+                            recommendations = 'Rice, Maize, Soybean, Cotton, Groundnut';
+                        } else if (month >= 10 && month <= 11) {
+                            season = 'Rabi';
+                            recommendations = 'Wheat, Barley, Mustard, Chickpea, Peas';
+                        } else if (month >= 2 && month <= 3) {
+                            season = 'Zaid';
+                            recommendations = 'Watermelon, Cucumber, Pumpkin, Bitter Gourd';
+                        } else if (month >= 8 && month <= 9) {
+                            season = 'Late Kharif';
+                            recommendations = 'Urad, Moong, Castor, Niger';
+                        } else {
+                            season = (month >= 4 && month <= 5) ? 'Summer' : 'Winter';
+                            recommendations = 'Consult local advisors for off-season vegetable sowing.';
+                        }
+
+                        let sowingReadiness = '';
+                        if (rain > 20) {
+                            sowingReadiness = 'Soil may be too wet for sowing.';
+                            sowingIcon.style.color = '#ef4444';
+                            cropRecommendationBox.style.background = 'rgba(239, 68, 68, 0.05)';
+                            cropRecommendationBox.style.borderColor = 'rgba(239, 68, 68, 0.2)';
+                        } else if (temp > 40) {
+                            sowingReadiness = 'Temperatures are too high for germination.';
+                            sowingIcon.style.color = '#f97316';
+                            cropRecommendationBox.style.background = 'rgba(249, 115, 22, 0.05)';
+                            cropRecommendationBox.style.borderColor = 'rgba(249, 115, 22, 0.2)';
+                        } else if (month >= 6 && month <= 7 && rain < 2) {
+                            sowingReadiness = 'Waiting for monsoon progression to sow Kharif crops.';
+                            sowingIcon.className = 'fas fa-hourglass-half';
+                            sowingIcon.style.color = '#facc15';
+                            cropRecommendationBox.style.background = 'rgba(250, 204, 21, 0.05)';
+                            cropRecommendationBox.style.borderColor = 'rgba(250, 204, 21, 0.2)';
+                        } else {
+                            sowingReadiness = 'Ready for sowing.';
+                            sowingIcon.className = 'fas fa-check-circle';
+                            sowingIcon.style.color = '#10b981';
+                            cropRecommendationBox.style.background = 'rgba(16, 185, 129, 0.05)';
+                            cropRecommendationBox.style.borderColor = 'rgba(16, 185, 129, 0.2)';
+                        }
+
+                        sowingStatusText.textContent = `${season} Season: ${sowingReadiness}`;
+                        recommendedCropsText.innerHTML = `<strong>Suitable Crops:</strong> ${recommendations}`;
 
                         // Populate Past & Upcoming Forecast
                         const forecastContainer = document.getElementById('forecastContainer');
@@ -360,6 +430,12 @@
                                 `;
                             }
                         }
+                    })
+                    .catch(e => console.error("Weather fetch error:", e));
+            }
+            
+            fetchOpenMeteo(lat, lon, "New Delhi");
+        }
 
         // Parse crop data from Python template context
         const cropDataJson = {{ crop_data | tojson | safe | default('[]') }};
@@ -503,6 +579,9 @@
                 window.myWeatherChart.update();
             }
         });
+        
+        // Final initialization calls
+        loadWeather();
     });
 </script>
 {% endblock %}
