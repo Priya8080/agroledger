@@ -1,10 +1,13 @@
 import os
 from dotenv import load_dotenv
+from datetime import timedelta
 
 load_dotenv()
 
 class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'super-secret-agroledger-key'
+    SESSION_COOKIE_SAMESITE = 'Lax'
+    PERMANENT_SESSION_LIFETIME = timedelta(days=7)
     
     # MySQL Settings (Fallback to localhost for local development)
     MYSQL_HOST = os.environ.get('MYSQL_HOST', 'mysql-7c2b22d-kumaripriya8084785476-6098.i.aivencloud.com')

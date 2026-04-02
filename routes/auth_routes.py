@@ -139,6 +139,7 @@ def login():
                     flash("Please verify your email address before logging in. If you didn't receive the email, click the link below to resend it.")
                     return render_template("login.html", show_resend=True)
 
+                session.permanent = True
                 session['user_email'] = email
                 print(f"Successful login for: {email}")
                 return redirect(url_for('dashboard.dashboard_view'))
