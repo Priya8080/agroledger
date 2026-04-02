@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, session, redirect, url_for, request, flash, current_app
-from models.user import get_user_by_email, get_all_unverified_users, verify_user, delete_user
+from models.user import get_user_by_email, delete_user
 from models.land import add_land, get_user_lands, delete_land
 from models.crop import add_crop, get_user_crops, delete_crop
 from models.labour import add_labour, get_user_labour, delete_labour

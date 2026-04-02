@@ -25,6 +25,21 @@ class MySQL:
                 autocommit=True,
                 ssl={} # Requires SSL for Aiven DB
             )
+        else:
+            try:
+                g.mysql_db.ping(reconnect=True)
+            except Exception:
+                # If ping fails, recreate the connection
+                port = int(current_app.config.get('MYSQL_PORT', 3306))
+                g.mysql_db = pymysql.connect(
+                    host=current_app.config.get('MYSQL_HOST', 'localhost'),
+                    user=current_app.config.get('MYSQL_USER', 'root'),
+                    password=current_app.config.get('MYSQL_PASSWORD', ''),
+                    db=current_app.config.get('MYSQL_DB', ''),
+                    port=port,
+                    autocommit=True,
+                    ssl={}
+                )
         return g.mysql_db
 
     def teardown(self, exception):

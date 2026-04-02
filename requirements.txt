@@ -3,6 +3,8 @@ PyMySQL==1.1.0
 Werkzeug==3.0.1
 python-dotenv==1.0.0
 Flask-Mail==0.9.1
-cryptography
-gunicorn==23.0.0
-setuptools
+itsdangerous==2.1.2
+cryptography==42.0.5
+gunicorn==21.2.0
+mysqlclient==2.2.4
+pymysql==1.1.0

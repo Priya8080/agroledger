@@ -30,9 +30,7 @@ tables = [
         email VARCHAR(100) UNIQUE NOT NULL,
         phone VARCHAR(20) NOT NULL,
         password VARCHAR(255) NOT NULL,
-        is_verified BOOLEAN DEFAULT FALSE,
-        otp VARCHAR(10),
-        otp_expiry DATETIME,
+        is_verified BOOLEAN DEFAULT TRUE,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
     """,

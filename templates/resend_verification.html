@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}AgroLedger - Login{% endblock %}
+{% block title %}AgroLedger - Resend Verification{% endblock %}
 
 {% block content %}
 <div class="auth-container relative text-center">
@@ -8,14 +8,14 @@
         <img src="{{ url_for('static', filename='images/dashboard_header.png') }}" alt="Agriculture Background" style="width: 100%; height: 100%; object-fit: cover; filter: blur(2px);">
     </div>
 
-    <!-- Login Card -->
+    <!-- Resend Card -->
     <div class="glass-card auth-card relative z-10" style="margin: 0 auto; text-align: left;">
         <div class="text-center mb-8">
             <div class="icon-box" style="margin: 0 auto; margin-bottom: 1rem; background: rgba(129,199,132,0.2); color: var(--agro-dark);">
-                <i class="fas fa-leaf text-2xl"></i>
+                <i class="fas fa-paper-plane text-2xl"></i>
             </div>
-            <h2 style="font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem;">Welcome Back</h2>
-            <p style="color: var(--text-light);">Login to manage your farm efficiently.</p>
+            <h2 style="font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem;">Resend Verification</h2>
+            <p style="color: var(--text-light);">Enter your email to receive a new verification link.</p>
         </div>
 
         {% with messages = get_flashed_messages() %}
@@ -30,33 +30,21 @@
             {% endif %}
         {% endwith %}
 
-        <form method="POST" action="{{ url_for('auth.login') }}">
+        <form method="POST" action="{{ url_for('auth.resend_verification') }}">
             <div class="form-group">
                 <label for="email" class="form-label"><i class="fas fa-envelope" style="margin-right: 0.5rem; color: var(--text-light);"></i> Email Address</label>
                 <input type="email" id="email" name="email" required class="form-input" placeholder="you@example.com">
             </div>
 
-            <div class="form-group mb-6">
-                <label for="password" class="form-label"><i class="fas fa-lock" style="margin-right: 0.5rem; color: var(--text-light);"></i> Password</label>
-                <input type="password" id="password" name="password" required class="form-input" placeholder="••••••••">
-                {% if show_resend %}
-                <div style="margin-top: 0.5rem; text-align: right;">
-                    <a href="{{ url_for('auth.resend_verification') }}" style="color: var(--agro-dark); font-size: 0.875rem; font-weight: 500;">
-                        <i class="fas fa-redo-alt" style="margin-right: 0.25rem;"></i> Resend verification email?
-                    </a>
-                </div>
-                {% endif %}
-            </div>
-
             <button type="submit" class="btn btn-primary" style="width: 100%; padding: 1rem; font-size: 1.125rem; margin-top: 1.5rem;">
-                <i class="fas fa-sign-in-alt mt-1"></i> Login
+                <i class="fas fa-paper-plane mt-1"></i> Resend Email
             </button>
         </form>
 
         <div class="text-center" style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border-color);">
             <p style="color: var(--text-light); font-size: 0.875rem;">
-                Don't have an account? 
-                <a href="{{ url_for('auth.register') }}" style="color: var(--agro-dark); font-weight: 600; margin-left: 0.25rem;">Register</a>
+                Remembered your password? 
+                <a href="{{ url_for('auth.login') }}" style="color: var(--agro-dark); font-weight: 600; margin-left: 0.25rem;">Login</a>
             </p>
         </div>
     </div>
