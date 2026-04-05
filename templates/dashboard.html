@@ -166,7 +166,11 @@
         </div>
 
         <!-- Charts Grid -->
-        <div class="dashboard-grid pb-8" style="grid-template-columns: 1fr 1fr;">
+        <div class="dashboard-grid pb-8" id="chartsRow">
+            <style>
+                #chartsRow { grid-template-columns: 1fr 1fr; }
+                @media (max-width: 1024px) { #chartsRow { grid-template-columns: 1fr; } }
+            </style>
             <!-- Profit Donut Chart -->
             <div class="glass-card" style="display: flex; flex-direction: column;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
